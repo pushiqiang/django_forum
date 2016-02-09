@@ -1,0 +1,5 @@
+{% for post in user_posts %}
+
+{{ post }}<a href="{% url 'post_update' post.id %}">修改</a>|<a href="{% url 'post_delete' post.id %}">删除</a><br>
+
+{% endfor %}

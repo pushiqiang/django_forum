@@ -1,0 +1,75 @@
+#all_post
+{
+	margin:0 auto; 
+	width:90%;  
+	border:1px solid #F00;
+}
+
+.post
+{
+	margin:15px 15px;
+	border:1px solid #500;
+}
+
+.avatar
+{
+	float:left;
+	width:15%;
+	height:500px;
+	border:1px solid #300;
+}
+
+.content
+{
+	float:left;
+	width:75%;
+	
+	border:1px solid #F00
+}
+
+.comment
+{
+	height:200px;margin:15px 15px;border:1px solid #300;
+}
+
+.avatar_comment
+{
+	float:left;
+	width:15%;
+	height:200px;
+	border:1px solid #300;
+}
+
+.content_comment
+{
+	float:left;
+	width:75%;
+	height:200px; 
+	border:1px solid #F00
+}
+
+.floor
+{
+	float:left;
+ 	width:5%;
+}
+
+
+.mydiv {
+line-height:20px;
+border: 1px solid #0080FF;
+font-size: 12px;
+z-index:999;
+width: 30%;
+height: 220px;
+left:35%;
+top:40%;
+background-color: #FFF;
+margin-left:-150px!important;/*FF IE7 该值为本身宽的一半 */
+margin-top:-60px!important;/*FF IE7 该值为本身高的一半*/
+margin-top:0px;
+position:fixed!important;/* FF IE7*/
+position:absolute;/*IE6*/
+}
+
+

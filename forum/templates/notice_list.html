@@ -1,0 +1,17 @@
+我的好友：
+{% for friend in myfriends %}
+   {{ friend.username }}|<a href="{% url 'send_message' friend.pk %}">发消息</a>;	
+{% endfor %}
+<br>
+
+主题：<a href="{% url 'user_post' %}">查看已发帖</a>;<a href="{% url 'post_create' %}">发帖</a>;<br>
+
+通知:<br>
+{% for notice in notice_list %}
+	{% ifequal notice.type 2 %}
+		{{ notice }} <a href="{% url 'friend_agree' notice.pk 1 %}">同意</a>|<a href="{% url 'friend_agree' notice.pk 2 %}">拒绝</a><br>
+	{% else %}
+		<a href="{% url 'notice_detail' notice.pk %}">{{ notice }}</a><br>
+	{% endifequal %}
+	
+{% endfor %}

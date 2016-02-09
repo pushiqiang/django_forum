@@ -1,0 +1,8 @@
+{% for message in all_message %}
+	{% ifequal message.type 2 %}
+		{{ message }} <a href="/user/message/{{message.pk}}">同意</a>|<a href="/user/message/{{message.pk}}">拒绝</a><br>
+	{% else %}
+		<a href="/user/message/{{message.pk}}">{{ message }}</a><br>
+	{% endifequal %}
+	
+{% endfor %}

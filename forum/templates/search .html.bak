@@ -1,0 +1,15 @@
+{% extends "./base.html" %}
+
+{% block content %}
+
+
+<div id="all_post">
+	{% for post in post_list %}
+			{{ forloop.counter }}:<a href="{{ post.get_absolute_url }}">{{ post.title }}</a><br>
+	{% endfor %}
+</div>
+
+
+{% endblock %}        
+        
+    

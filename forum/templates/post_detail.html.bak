@@ -1,0 +1,202 @@
+{% extends "./base.html" %}
+{% load friendfilter %}
+ 
+{% block css %} 
+<link rel="stylesheet" type="text/css" href="/static/css/post_detail.css"> 
+{% endblock %}				
+
+
+
+
+{% block athor %} 
+<!-- 遮窗 Start -->
+<div id="popDiv" class="mydiv" style="display:none;">
+<textarea id="comment" name="comment" class="form-control" rows="5" cols=35 placeholder="请输入评论 限200字!"></textarea>
+<br/>
+<a href="javascript:closeDivFun()">评论</a>
+</div>
+<!-- 遮窗 end -->
+{% endblock %}
+
+
+{%block user %} 
+
+<ul class="user floatr">
+{% if not user.is_authenticated %}
+<li id="mn_portal"><a href="{% url 'user_login' %}" hidefocus="true" title="登陆">登陆</a></li>
+<li class="a" id="mn_forum"><a href="{% url 'user_register' %}" hidefocus="true" title="注册">注册</a></li>
+{%else%}
+<li id="mn_portal"><a href="{% url 'show_notice' %}" hidefocus="true" title="Portal">{{user.username}}({%if message_number %}{{message_number}}{%else%}0{%endif%})</a></li>
+<li id="mn_portal"><a href="{% url 'user_logout'%}" hidefocus="true" title="Portal">注销</a></li>
+{% endif %}
+
+</ul>
+
+{% endblock %}
+
+{%block nav %} 
+     <ul>
+ 	<li class="current"><a href="/">首页</a></li>
+        {% for nav in nav_list %}
+		<li><a href="/">{{ nav.name }}</a></li>
+	{% endfor %}
+                   
+     </ul>
+{% endblock %}
+
+{% block content %}
+
+<!-- zoopda navigation start -->
+
+<!-- End -->
+
+<div id="all_post">
+	<div class="post"> 
+		<div class="avatar">
+		<img src="{{ post.author.avatar}}" border="0"><br>
+                用户名：{{ post.author.username }}<br>
+		积分：{{ post.author.levels }}<br>
+		{% if user.username %}
+          {% ifnotequal  post.author.username user.username %}
+                      {%if not post.author|checkfriend:user.username %}
+				              <a href="{% url 'make_friend' user.username post.author.username %}">加好友</a>
+		                  {% else %}
+				              <a href="{% url 'send_message' post.author.id %}">发消息</a>
+		                  {% endif %}
+		      {% endifnotequal %}
+		{% endif %}
+		</div>
+		<div class="content">
+			<font size="8" face="arial" color="red">标题：{{ post.title }}</font>
+			<br>{% autoescape off %}
+						{{post.content}}
+					{% endautoescape %}
+		</div>
+	</div>
+	<!-- -------------------------评论------------------------- start -->
+	<div class="well">
+    <div class="vmaig-comment">
+        <div class="vmaig-comment-tx">
+            {% if user.img%}
+            <img src="{{user.img}}" width="40"></img>
+            {%else%}
+            <img src="http://vmaig.qiniudn.com/image/tx/tx-default.jpg" width="40"></img>
+            {%endif%}
+        </div>
+        <div class="vmaig-comment-edit clearfix">
+            <form id="vmaig-comment-form" method="post" role="form">
+                {% csrf_token %}
+                <textarea id="comment2" name="comment" class="form-control" rows="4" placeholder="请输入评论 限200字!"></textarea>
+                <button type="submit" class="btn btn-vmaig-comments pull-right">提交</button>
+            </form>
+        </div>
+        <ul>
+            {% for comment in comment_list%}
+            <li>
+	    <div class="comment">
+            <div class="avatar_comment">
+                {% if comment.author.avatar %}
+                	<img src={{comment.author.avatar}} width="40"></img><br>
+                {%else%}
+                	<img src="http://vmaig.qiniudn.com/image/tx/tx-default.jpg" width="40"></img><br>
+                {%endif%}
+                	用户名：{{ comment.author.username }}<br>
+			积分：{{ comment.author.levels }}<br>
+			{% if user.username %}
+			{% ifnotequal  comment.author.username user.username %}
+		        	{%if not comment.author|checkfriend:user.username %}
+				        <a href="{% url 'make_friend' user.username comment.author.username %}">加好友</a>
+              {% else %}
+				        <a href="{% url 'send_message' comment.author.id %}">发消息</a>
+		          {% endif %}
+			{% endifnotequal %}
+			{% endif %}
+            </div>
+            <div class="content_comment">
+                <p>{% if comment.comment_parent %}回复{{comment.comment_parent.author}} 发表于{{comment.comment_parent.created_at|date:"Y-m-d H:i:s"}}的内容《{{comment.comment_parent.content}}》; {% endif %}{{comment.created_at|date:"Y-m-d H:i:s" }}</p>
+                <p>
+                    评论：
+                    {% autoescape on%}
+                    {{ comment.content }}
+                    {% endautoescape %}
+                </p>
+             
+            </div>
+	    <div class="floor">
+		{% ifequal forloop.counter 1%} 
+		沙发
+		{% else %}
+			{% ifequal forloop.counter 2%} 
+				板凳
+			{% else %}
+				{{ forloop.counter}}楼
+			{% endifequal %}
+		{% endifequal %}
+		<a href="javascript:showDivFun({{comment.pk}})">评论</a>
+	     </div>
+            </div>
+            </li>
+            {% endfor%}
+        </ul>
+    </div>
+</div>
+
+<script src="/static/js/jquery.min.js" language="javascript" type="text/javascript"></script>
+<script language="javascript" type="text/javascript">
+//弹出调用的方法
+commentid=0;
+function showDivFun(comment_id){
+    {% if not user.is_authenticated %}
+        alert("请登录后评论！")
+        location.reload();
+    {% endif %}
+    commentid=comment_id;
+    document.getElementById('popDiv').style.display='block';
+    
+}
+//关闭事件
+function closeDivFun(){
+    
+    document.getElementById('popDiv').style.display='none';
+    $.ajax({
+            type:"POST",
+            url:"/makecomment/",
+            data:{"comment":$("#comment").val(),"comment_id":commentid,"post_id":{{post.pk}},},
+            //beforeSend:function(xhr){
+                //xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));  
+            //},
+            success:function(data,textStatus){
+		
+                location.reload();
+            }
+
+        });
+        
+     
+}
+ 
+    $('#vmaig-comment-form').submit(function(){
+	{% if not user.is_authenticated %}
+        alert("请登录后评论！")
+        return false;
+        {% endif %}
+        $.ajax({
+            type:"POST",
+            url:"{% url 'make_comment'%}",
+            data:{"comment":$("#comment2").val(),"post_id":{{post.pk}}},
+            success:function(data,textStatus){
+                location.reload();
+            }
+            
+        });
+        return false;
+    }); 
+</script>
+        <!-- -------------------------评论------------------------- end -->
+	
+</div>
+
+
+{% endblock %}        
+        
+    

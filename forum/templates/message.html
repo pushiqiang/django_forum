@@ -1,0 +1,7 @@
+发送者:{{ message.sender }}<br>
+内容:{{ message.content }}<br>
+时间:{{ message.created_at|date:"Y-m-d H:i:s" }}
+<br>
+<br>
+
+<a href="{% url 'send_message' message.sender.id %}">回复消息</a>

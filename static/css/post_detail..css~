@@ -1,0 +1,56 @@
+#all_post
+{
+	margin:0 auto; 
+	width:90%;  
+	border:1px solid #F00;
+}
+
+.post
+{
+	
+	height:500px;
+	margin:15px 15px;
+	border:1px solid #500;
+}
+
+.avatar
+{
+	float:left;
+	width:15%;
+	height:500px;
+	border:1px solid #300;
+}
+
+.content
+{
+	float:left;
+	width:75%;
+	height:500px; 
+	border:1px solid #F00
+}
+
+.comment
+{
+	height:200px;margin:15px 15px;border:1px solid #300;
+}
+
+.avatar_comment
+{
+	float:left;
+	width:15%;
+	height:200px;
+	border:1px solid #300;
+}
+
+.content_comment
+{
+	float:left;
+	width:75%;
+	height:200px; 
+	border:1px solid #F00
+}
+.floor
+{
+	float:left;
+ 	width:5%
+}

@@ -1,0 +1,8 @@
+{% if errors %}
+	注册失败！<br>
+	{% for error in errors %}
+		{{error}}<br>
+	{% endfor %}
+{% else %}
+	注册成功 OK！
+{% endif %}

@@ -1,0 +1,214 @@
+{% extends "./base.html" %}
+{%block user %} 
+
+<ul class="user floatr">
+{% if not user.is_authenticated %}
+<li id="mn_portal"><a href="{% url 'user_login' %}" hidefocus="true" title="登陆">登陆</a></li>
+<li class="a" id="mn_forum"><a href="{% url 'user_register' %}" hidefocus="true" title="注册">注册</a></li>
+{%else%}
+<li id="mn_portal"><a href="{% url 'show_notice' %}" hidefocus="true" title="消息">{{user.username}}({%if message_number %}{{message_number}}{%else%}0{%endif%})</a></li>
+<li id="mn_portal"><a href="{% url 'user_logout'%}" hidefocus="true" title="注销">注销</a></li>
+{% endif %}
+
+</ul>
+
+{% endblock %}
+        
+
+{%block nav %} 
+     <ul>
+ 	<li class="current"><a href="/">首页</a></li>
+        {% for nav in nav_list %}
+		<li><a href="/">{{ nav.name }}</a></li>
+	{% endfor %}
+                   
+     </ul>
+{% endblock %}
+
+
+{% block content %} 
+
+<div class="wrap">
+
+    	<!-- Diy area start -->
+        	                    
+ 
+                <!-- End -->
+
+        <!-- Banner start -->
+<!-- end -->
+
+        <!-- text start -->
+        	<div class="con box">
+
+               
+            	<!-- End -->
+                
+                <!-- text theme list start -->
+                <div class="list" id="threadlist" style="position: relative;">
+<script src="/static/css/forum_moderate.js" type="text/javascript"></script>
+<form method="post" autocomplete="off" name="moderate" id="moderate" action="">
+<input type="hidden" name="formhash" value="31213a3e">
+<input type="hidden" name="listextra" value="">
+
+
+
+{% if post_list %}
+{% for post in post_list %}
+<table width="100%">			
+        <tbody><tr id="post">
+            <td width="10%" class="avatar" valign="middle">
+		<a href="{{ post.get_absolute_url }}" title="">
+			<img src="{{ post.author.avatar }}">
+		</a>
+            </td>
+            
+            <td width="auto" valign="middle" class="mainbox">
+                <div class="title">
+<a class="title" href="{{ post.get_absolute_url }}" rel="bookmark" title="">{{ post.title }}</a>
+                                </div>
+                <div class="status">
+                    <div class="cate"><a href="{{ post.column.get_absolute_url }}" target="_blank">{{ post.column }}</a></div>
+                    <span>•</span>
+                    
+                    <div class="date"><span title="">发表于{{ post.created_at|date:"Y-m-d H:i:s" }}</span></div>
+                    <span>•</span>
+                    <div class="author">{{ post.author }}</div>
+                                        <span>•</span>
+                                        
+                    <div class="lastreply">
+                        <a href="" target="_blank" title="1 分钟前">{{ post.last_response }}最后回复</a>
+                    </div>
+                    
+                                    </div>
+            </td>
+            
+            <td width="11%" align="right" valign="middle" class="reply">
+            	<a href="" target="_blank">{{ post.responce_times }}/{{ post.view_times }}</a>
+            </td>
+        </tr>
+    </tbody></table>
+    {% endfor %}
+{% endif %}
+            </form>
+</div>
+                <!-- End -->
+
+                <!-- Page start -->
+                    <div class="pages clearfix">
+        <div class="backhome" id="visitedforumstmp" onMouseOver="$(&#39;visitedforums&#39;).id = &#39;visitedforumstmp&#39;;this.id = &#39;visitedforums&#39;;showMenu({&#39;ctrlid&#39;:this.id,&#39;pos&#39;:&#39;21&#39;})"><a href="/">返&nbsp;回</a></div>
+		
+            <ul class="num">
+			<?php pagenavi(); ?>
+
+			</ul>    </div>
+                <!-- End -->
+            </div>
+        <!-- End -->
+
+        <!-- Right block start -->
+            <div class="sub">
+            <div class="sub">
+
+    
+    
+    <!-- 版规 Start -->
+        
+    <!-- 版规 End -->
+
+
+    
+    <!-- 热门板块 Start -->
+    <div class="box sidewidget">
+        <h5 class="clearfix">
+         热门版块
+         <!-- <a href="#" class="floatr cicon">VEER团购499</a> -->
+              </h5>
+     <div class="hotbo sidebox">
+        <ul>
+	    {% for column in column_list %}
+		<li class="bo_59 clearfix">
+                <div class="block_icon">
+                    <a href="{{ column.get_absolute_url }}">
+                        <img src="{{column.img}}" height="50" width="50" border="0">
+                    </a>
+                </div>
+                <div class="block_info">
+                    <h2>
+                        <a href="{{ column.get_absolute_url }}">{{column.name}}</a>
+                    </h2>
+                    <div class="describe">{{column.description}}</div>
+                </div>
+                </li>
+	    {% endfor %}
+            
+                                </ul>
+    </div>
+    <div class="topbo">
+        
+        <!-- Block Square -->
+        <div class="block_square">
+            <a href="{% url 'column_all' %}" class="bnor">所有板块</a>
+        </div>
+        <!-- End -->
+
+    </div>
+</div>
+<!-- 热门板块 End -->
+
+<!-- 彩色 Start --><!-- 彩色 End -->
+
+
+<!-- BBS状态 Start -->
+<div class="favorite box sidewidget">
+    <h5 class="clearfix">热点帖子</h5>
+    <div class="list sidebox">
+        <ul>
+	{% for hot_post in hot_posts %}
+		<li>
+		<a href="{{ hot_post.get_absolute_url }}">{{ hot_post.title }}</a>
+		</li>	
+	{% endfor %}
+	</ul>
+    </div>
+</div>
+
+<div class="box sidewidget">
+    <h5 class="clearfix">论坛统计</h5>
+    <div class="list sidebox">
+        <ul>
+            <li>在线人数: {{ online_ips_count }}</li>
+            <li>注册人数：{{ foruminfo.post_number }}</li>
+            <li>帖子数：{{ foruminfo.account_number }}</li>
+            <li>今日: {{ foruminfo.today_post_number }}</li>
+            <li>昨日: {{ foruminfo.lastday_post_number }}</li>
+            
+                    </ul>
+    </div>
+</div>
+<!-- BBS状态 End -->
+
+<!-- BBS微信QR码 Start -->
+    <div class="box sidewidget">
+    <h5 class="clearfix">最近评论</h5>
+    <div class="list sidebox">
+	<ul>
+	{% for last_comment in last_comments %}
+		<li>
+		<a href="{{ last_comment.get_absolute_url }}">{{ last_comment.author }}:{{ last_comment.content }}</a>
+		</li>	
+	{% endfor %}
+	</ul>
+        <!-- <img alt="煮机网" src="<?php bloginfo('stylesheet_directory'); ?>/images/qr_zoopda.gif">-->
+    </div>
+    
+</div>
+<!-- BBS微信QR码 End -->
+
+</div>            </div>
+        <!-- End -->
+    </div>
+
+{% endblock %}
+
+

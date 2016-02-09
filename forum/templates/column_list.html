@@ -1,0 +1,8 @@
+{% for column in column_list %}
+	板块：<a href="{{ column.get_absolute_url }}">{{ column.name }}</a> ; 管理员:{{ column.manager }}; 帖子:{{column.post_number}}<br>
+	帖子列表：
+	{% for post in column.post_set.all %}
+		<a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+	{% endfor %}
+	<br>
+{% endfor %}

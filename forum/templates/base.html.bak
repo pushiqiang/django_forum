@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>论坛</title>
+
+<meta name="author" content="Zookr Team">
+<meta name="copyright" content="2001-2012 Zookr Inc.">
+<meta name="MSSmartTagsPreventParsing" content="True">
+<meta http-equiv="MSThemeCompatible" content="Yes">
+
+<link rel="stylesheet" type="text/css" href="/static/css/style_21_common.css">
+<link rel="stylesheet" type="text/css" href="/static/css/style_21_forum_index.css"> 
+	
+<link id="css_forum_moderator" type="text/css" rel="stylesheet" href="/static/css/style_21_forum_moderator.css">
+<link type="text/css" rel="stylesheet" href="chrome-extension://olmanbchlogbfhhgimnombopppdooidm/css/style.css"></head>
+{% block css %} 
+{% endblock %}
+                         
+
+<body id="nv_forum" class="pg_index fid_bbshome" onkeydown="if(event.keyCode==27) return false;">
+{% block athor %} 
+{% endblock %}
+
+    <div class="fxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxk_discuz_hd">
+        
+
+            <!-- BIG Start -->
+                        <div class="header clearfix">
+                <!-- 导航 Start -->
+                                                <div class="nav">
+    <div class="wrap clearfix">
+         <div class="discuztips clearfix floatl">
+                    <div class="toptips clearfix">
+                        <div id="an" class="clearfix">
+                            <strong>公告 : </strong>
+                            <div id="anc">
+                                <ul id="ancl">
+                                    <li><span><a href="" target="_blank" class="xi2">本论坛正在建设中...</a></span><em>(2016-1-25)</em></li>                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <script type="text/javascript">announcement();</script>
+
+                                    </div>
+
+{%block user %} 
+{% endblock %}
+        
+    </div>
+</div>
+                <!-- 导航 END -->
+
+                <div class="header-content">
+                     <div class="wrap">
+                        <!-- LOGO Start -->
+                            <div class="logo">
+
+                <a href="/" title="煮机论坛"> <img src="/static/images/logo_bbs.png" alt="煮机网" border="0">            </a>
+
+</div>                        <!-- LOGO End -->
+
+                        <!-- 搜索 Start -->
+<div class="search" id="scarch_bar">
+<form id="scarch_bar_form" method="post" autocomplete="off" onSubmit="searchFocus($(&#39;scarch_bar_txt&#39;))" action="{% url 'search' %}">
+           <div class="input">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tbody><tr>
+                    <td>
+                        
+                        <input id="scarch_bar_txt" name="srchtxt" type="text" dir="ltr" size="35" spellcheck="false" value="" autocomplete="off" x-webkit-speech="" speech="" class=" xg1" placeholder="请输入搜索内容">
+                    </td>
+                    <td width="40" align="right">
+                        <a href="javascript:;" id="scarch_bar_type" class="showmenu xg1 xs2" onClick="showMenu(this.id)" hidefocus="true">帖子</a>
+                    </td>
+                </tr>
+            </tbody></table>
+           
+        </div>
+        <button type="submit" name="searchsubmit" id="searchsubmit" sc="1" class="button" value="true"><strong class="xi2 xs2">搜索</strong></button>
+        
+    </form>
+</div>
+<ul id="scarch_bar_type_menu" class="p_pop" style="display: none;"><li><a href="javascript:;" rel="forum" class="curtype">帖子</a></li><li><a href="javascript:;" rel="user">用户</a></li></ul>
+<script type="text/javascript">
+    //initSearchmenu('scarch_bar', '');
+</script>
+                        <!-- 搜索 End -->
+
+
+                                          <!-- 用户账户 End -->
+                    </div>
+                </div>
+
+                <!-- 子导航 Start -->
+                    <div class="subnav">
+    <div class="wrap">
+        <!-- text menu start -->
+        <div class="bo_nav clearfix" id="category">
+	{% block nav %} 
+	{% endblock %}
+                         
+         
+            <!-- Fast Invitation start -->
+            <ul>
+                <li class="fast-tool"><a href="{% url 'post_create'%}">发帖</a></li>
+                            </ul>
+            <!-- End -->
+
+        </div>
+        <!-- End -->
+    </div>
+</div>                <!-- 子导航 End -->
+
+              </div>
+
+<div class="main clearfix">
+
+<!-- zoopda navigation start -->
+
+<!-- End -->
+	{% block content %} 
+	{% endblock %}
+                         
+
+</div>        
+        
+    
+
+    
+<div class="footer clearfix">
+    	<div class="wrap">
+            <div class="nav">
+            	<!-- footer navigation start -->
+                <a href="">手机版</a><span class="pipe">|</span><a href="">Archiver</a><span class="pipe">|</span><a href="">合作伙伴</a><span class="pipe">|</span><a href="">@小鱼论坛</a><span class="pipe">|</span><a href="">@社区</a><span class="pipe">|</span>                <!-- End -->
+                &nbsp;&nbsp;<a href="" title="腾讯分析" target="_blank">腾讯分析</a><script type="text/javascript" src="" charset="utf-8"></script><script type="text/javascript" reload="1">pgvMain({"discuzParams":{"r2":"1558567","ui":0,"rt":"forum","md":"index","pn":1,"qq":"000","logo":9},"extraParams":""});</script><script type="text/javascript" src=""></script><img src="" border="0" width="1" height="1"><noscript>&lt;a href="http://www.linezing.com"&gt;&lt;img src="http://img.tongji.linezing.com/1042481/tongji.gif"/&gt;&lt;/a&gt;</noscript>
+            </div>
+            <div class="copyright">
+                © 2001-2013 <strong><a href="" target="_blank">IOT510</a> </strong>
+
+                <br>Powered by <a href="" target="_blank">pushiqiang</a> 
+                
+                ( <a href="" target="_blank">ICP备10241590号-3 | B2-20110072</a> )
+                
+                <span id="debuginfo">
+                                    </span>
+                            </div>
+                                </div>
+    </div>
+    <!-- BIG End -->
+    <div class="fxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxk_discuz_ft">
+    <div id="g_upmine_menu" class="tip tip_3" style="display:none;">
+<div class="tip_c">
+积分 0, 距离下一级还需  积分
+</div>
+<div class="tip_horn"></div>
+</div>
+<div id="scrolltop" onClick="window.scrollTo(&#39;0&#39;,&#39;0&#39;)" style="left: auto; right: 0px; visibility: hidden;">回顶部</div>
+<div id="ft"></div>
+   </div>
+
+
+
+
+<div id="yunpan_image_hover_container" style="z-index: 410; left: 298px; top: 187px;"><style>            #yunpan_image_hover_container {                width: 23px;                height: 100px;                background-image: url(chrome-extension://olmanbchlogbfhhgimnombopppdooidm/images/hover-vertical.png);                background-position: -33px 0;            }            #yunpan_image_hover_container:hover {background-image: url(chrome-extension://olmanbchlogbfhhgimnombopppdooidm/images/hover-vertical.png);}            </style></div>
+<?php wp_footer(); ?>
+
+</body></html>

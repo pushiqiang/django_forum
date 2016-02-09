@@ -1,0 +1,11 @@
+板块:{{ column_obj.name}}; 管理员:{{ column_obj.manager }}; 帖子:{{column_obj.post_number}}<br>
+
+{% for post in column_posts %}
+<a href="{{ post.get_absolute_url }}" >{{ post.title }}</a>
+      
+      发表于:{{ post.created_at|date:"Y-m-d H:i:s" }};
+      作者:{{ post.author }}；
+      最后回复:{{ post.last_response }}
+      回复点击数:{{ post.responce_times }}/{{ post.view_times }}
+	<br>
+{% endfor %}
