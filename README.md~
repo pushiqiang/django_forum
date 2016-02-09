@@ -10,8 +10,8 @@ This is a small and simple forum which uses the Django Framework (written in Pyt
 
 部署于新浪云SAE (django1.5)<br>
 python 2.7 + django 1.7<br>
-demo演示:[demo](http://pushiqiang.sinaapp.com/)
-github项目:[github](https://github.com/pushiqiang/django_forum.git)
+demo演示:[http://pushiqiang.sinaapp.com/](http://pushiqiang.sinaapp.com/)<br>
+github项目:[https://github.com/pushiqiang/django_forum.git](https://github.com/pushiqiang/django_forum.git)
 qq:983003089
 
 功能：
