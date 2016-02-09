@@ -1,9 +1,10 @@
 # django_forum
-This is a small and simple forum which uses the Django Framework (written in Python language).这是一个基于django的小型论坛系统
+This is a small and simple forum which uses the Django Framework (written in Python language).<br>
+这是一个基于django的小型论坛系统
 
 这是个基于 Python django 的小型论坛系统
 ---
-本系统实现了一般论坛的主要功能，包括发帖，评论，评论回复，评论通知，加好友，好友消息，简单积分规则。
+本系统实现了一般论坛的主要功能，包括发帖，评论，评论回复，评论通知，加好友，好友消息,消息通知，简单积分规则。
 
 由于作者的前台技术不行，所以前台页面随便找了两个模版套上，大部分页面都只有模版标签，大家就看个功能吧，前台厉害的自己写个漂亮的页面把标签套上就可以了。
 <br>

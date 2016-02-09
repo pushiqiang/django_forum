@@ -1,5 +1,6 @@
 # django_forum
-This is a small and simple forum which uses the Django Framework (written in Python language).这是一个基于django的小型论坛系统
+This is a small and simple forum which uses the Django Framework (written in Python language).<br>
+这是一个基于django的小型论坛系统
 
 这是个基于 Python django 的小型论坛系统
 ---
@@ -11,7 +12,7 @@ This is a small and simple forum which uses the Django Framework (written in Pyt
 部署于新浪云SAE (django1.5)<br>
 python 2.7 + django 1.7<br>
 demo演示:[http://pushiqiang.sinaapp.com/](http://pushiqiang.sinaapp.com/)<br>
-github项目:[https://github.com/pushiqiang/django_forum.git](https://github.com/pushiqiang/django_forum.git)
+github项目:[https://github.com/pushiqiang/django_forum.git](https://github.com/pushiqiang/django_forum.git)<br>
 qq:983003089
 
 功能：
