@@ -9,8 +9,7 @@ This is a small and simple forum which uses the Django Framework (written in Pyt
 <br>
 
 python 2.7 + django 1.7<br>
-部署于SAE (django1.5)
-qq:983003089
+部署于SAE (django 1.5)
 
 功能：
 ---
