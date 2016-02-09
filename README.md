@@ -9,8 +9,8 @@ This is a small and simple forum which uses the Django Framework (written in Pyt
 由于作者的前台技术不行，所以前台页面随便找了两个模版套上，大部分页面都只有模版标签，大家就看个功能吧，前台厉害的自己写个漂亮的页面把标签套上就可以了。
 <br>
 
-部署于新浪云SAE (django1.5)<br>
 python 2.7 + django 1.7<br>
+系统部署于新浪云SAE (django1.5)(关于SAE部署静态文件问题，SAE默认是static，这时可以设置STATIC_ROOT，在本地执行了collectstatic后，将STATIC_ROOT文件夹部署)<br>
 demo演示:[http://pushiqiang.sinaapp.com/](http://pushiqiang.sinaapp.com/)<br>
 github项目:[https://github.com/pushiqiang/django_forum.git](https://github.com/pushiqiang/django_forum.git)<br>
 qq:983003089
