@@ -15,6 +15,12 @@ demo演示:[http://pushiqiang.sinaapp.com/](http://pushiqiang.sinaapp.com/)<br>
 github项目:[https://github.com/pushiqiang/django_forum.git](https://github.com/pushiqiang/django_forum.git)<br>
 qq:983003089
 
+
+功能：
+---
+2016.2.12  更新发帖验证码功能
+
+
 功能：
 ---
 1.发帖，删帖，编辑功能，使用tinymce富文本编辑器。<br>
