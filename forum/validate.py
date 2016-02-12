@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 #coding=utf-8
-
+"""
+此模块还需优化
+"""
 import random
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 

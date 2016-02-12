@@ -76,7 +76,7 @@ class PostType(models.Model):			#文章类型
 
 class Post(models.Model):					#文章
     title = models.CharField(max_length=30)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL,related_name='post_author')							#作者
+    author = models.ForeignKey(settings.AUTH_USER_MODEL,related_name='post_author')				#作者
     column = models.ForeignKey(Column)						#所属板块
     type_name = models.ForeignKey(PostType)						#文章类型
     content = models.TextField()
@@ -186,23 +186,24 @@ class Notice(models.Model):
 
 def post_save(sender, instance, signal, *args, **kwargs):
     entity = instance
-    if str(entity.created_at)[:19] == str(entity.updated_at)[:19]: 
+    if str(entity.created_at)[:19] == str(entity.updated_at)[:19]: #第一次发帖操作，编辑不操作
         column = entity.column
         column.post_number += 1
         column.save()
 
-def post_delete(sender, instance, signal, *args, **kwargs):
+def post_delete(sender, instance, signal, *args, **kwargs):	#删帖触发板块帖子数减1
     entity = instance
     column = entity.column
     column.post_number -= 1
     column.save()
-        
-def comment_save(sender, instance, signal, *args, **kwargs):
+    
+    
+def comment_save(sender, instance, signal, *args, **kwargs):    
     entity = instance
     if str(entity.created_at)[:19] == str(entity.updated_at)[:19]: 
         event = Notice(sender=entity.author,receiver=entity.post.author,event = entity,type=0) 
         event.save()
-        if entity.comment_parent is not None:
+        if entity.comment_parent is not None:		
             if entity.author.id != entity.comment_parent.author.id:
                 event = Notice(sender=entity.author,receiver=entity.comment_parent.author,event = entity,type=0) 
                 event.save()
@@ -220,7 +221,7 @@ def message_save(sender, instance, signal, *args, **kwargs):
         event.save()
 
 
-
+#消息响应函数注册
 signals.post_save.connect(comment_save, sender=Comment)
 signals.post_save.connect(application_save, sender=Message)
 signals.post_save.connect(message_save, sender=Application)

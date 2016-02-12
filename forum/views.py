@@ -34,6 +34,7 @@ logger = logging.getLogger(__name__)
 
 PAGE_NUM = 50
 
+#统计当前在线人数（5分钟内，中间件实现于middle.py）
 def get_online_ips_count():
     online_ips = cache.get("online_ips", [])
     if online_ips:
@@ -41,6 +42,7 @@ def get_online_ips_count():
         return len(online_ips)
     return 0
 
+#得到论坛信息，贴子数，用户数，昨日发帖数，今日发帖数
 def get_forum_info():
     #请使用缓存
     oneday = timedelta(days=1)
@@ -67,7 +69,7 @@ def get_forum_info():
 		"today_post_number":today_post_number}
     return info
                                                             
-
+#用户登录
 def userlogin(request,template_name='login.html'):
     if request.method == 'POST':
         username = request.POST['username']
@@ -86,10 +88,12 @@ def userlogin(request,template_name='login.html'):
             next = reverse_lazy('index')
         return render_to_response(template_name,{'next':next})
 
+#用户注销
 def userlogout(request):
     logout(request)
     return HttpResponseRedirect(reverse_lazy('index'))
 
+#用户注销
 def userregister(request):
     if request.method == 'POST':
         username = request.POST.get("username","")
@@ -151,7 +155,7 @@ class BaseMixin(object):
 
         return context
 
-
+#首页
 class IndexView(BaseMixin,ListView):
     model = Post
     queryset = Post.objects.all()
@@ -166,7 +170,7 @@ class IndexView(BaseMixin,ListView):
         return super(IndexView,self).get_context_data(**kwargs)
 
 
-    
+#帖子详细页面    
 def postdetail(request,post_pk):
     post_pk = int(post_pk)
     post = Post.objects.get(pk=post_pk)
@@ -190,6 +194,7 @@ def postdetail(request,post_pk):
     cache.set(title,visited_ips,15*60)
     return render_to_response('post_detail.html',{'post':post,'comment_list':comment_list,'message_number':k},context_instance=RequestContext(request))
 
+#加好友
 def makefriend(request,sender,receiver):
     sender = LoginUser.objects.get(username=sender)
     receiver = LoginUser.objects.get(username=receiver)
@@ -197,12 +202,14 @@ def makefriend(request,sender,receiver):
     application.save()
     return HttpResponse("OK申请发送成功！%s-->%s;<a href='/'>返回</a>"%(sender,receiver))
 
+#消息通知
 @login_required(login_url=reverse_lazy('user_login'))
 def shownotice(request):
     notice_list = Notice.objects.filter(receiver=request.user,status=False)
     myfriends = LoginUser.objects.get(username=request.user).friends.all()
     return render_to_response('notice_list.html',{'notice_list':notice_list,'myfriends':myfriends},context_instance=RequestContext(request))
 
+#具体通知
 def noticedetail(request,pk):
     pk = int(pk)
     notice = Notice.objects.get(pk=pk)
@@ -214,13 +221,13 @@ def noticedetail(request,pk):
     message_id = notice.event.id
     return HttpResponseRedirect(reverse_lazy('message_detail',kwargs ={"pk":message_id}))
 
-
+#好友同意/拒绝（flag 1同意，2拒绝）
 def friendagree(request,pk,flag):
     flag = int(flag)
     pk = int(pk)
     entity = Notice.objects.get(pk=pk)
     entity.status = True
-    application = entity.event      #get(pk=entity.object_id)              #.update(status=flag)
+    application = entity.event      
     application.status=flag
     
     application.receiver.friends.add(application.sender)
@@ -233,6 +240,7 @@ def friendagree(request,pk,flag):
         str="拒绝加好友"
     return HttpResponse(str)
 
+#用户已发贴
 class UserPostView(ListView):
     template_name = 'user_posts.html'
     context_object_name = 'user_posts'
@@ -242,7 +250,7 @@ class UserPostView(ListView):
         user_posts = Post.objects.filter(author=self.request.user)
         return user_posts
 
-
+#发帖
 class PostCreate(CreateView):   
     model = Post
     template_name = 'form.html'
@@ -253,7 +261,7 @@ class PostCreate(CreateView):
     #这里我们必须使用reverse_lazy() 而不是reverse，因为在该文件导入时URL 还没有加载。
 
     def form_valid(self, form):
-        # 自定义的代码逻辑写在这里
+        #此处有待加强安全验证
         validate = self.request.POST.get('validate',None)
         formdata = form.cleaned_data
         if self.request.session.get('validate',None) != validate:
@@ -269,20 +277,21 @@ class PostCreate(CreateView):
         user.save()
         return HttpResponse("发贴成功！<a href='/'>返回</a>")
      
-
+#编辑贴
 class PostUpdate(UpdateView):   
     model = Post
     template_name = 'form.html'
     success_url = reverse_lazy('user_post')             
 
 
-
+#删贴
 class PostDelete(DeleteView):
     model = Post
     template_name = 'delete_confirm.html'
     success_url = reverse_lazy('user_post')  
   
 
+#评论
 @login_required(login_url=reverse_lazy('user_login'))
 def makecomment(request):
     if request.method == 'POST':
@@ -308,6 +317,7 @@ def makecomment(request):
         
     return HttpResponse("评论成功")
 
+#发送消息
 class MessageCreate(CreateView):
     model = Message
     template_name = 'form.html'
@@ -317,7 +327,7 @@ class MessageCreate(CreateView):
     success_url = reverse_lazy('show_notice')
 
     def form_valid(self, form):
-        # 自定义的代码逻辑写在这里
+        #此处有待加强安全验证
         sender = LoginUser.objects.get(username=self.request.user)
         receiver_id = int(self.kwargs.get('pk'))
         receiver = LoginUser.objects.get(id=receiver_id)
@@ -328,24 +338,25 @@ class MessageCreate(CreateView):
         m.save()
         return HttpResponse("消息发送成功！")
 
-
+#具体消息
 class MessageDetail(DetailView):
     model = Message
     template_name = 'message.html'
     context_object_name = 'message'
 
-
+#所有板块
 def columnall(request):
     column_list = Column.objects.all()
     return render_to_response('column_list.html',{'column_list':column_list },context_instance=RequestContext(request))
 
+#每个板块
 def columndetail(request,column_pk):
     column_obj = Column.objects.get(pk=column_pk)
     column_posts = column_obj.post_set.all()
     
     return render_to_response('column_detail.html',{'column_obj':column_obj,'column_posts':column_posts },context_instance=RequestContext(request))    
 
- 
+#搜索 
 class SearchView(ListView):
     template_name = 'search_result.html'
     context_object_name = 'post_list'
@@ -362,7 +373,7 @@ class SearchView(ListView):
         post_list = Post.objects.only('title','content').filter(Q(title__icontains=q)|Q(content__icontains=q));
         return post_list
 
-
+#验证码
 def validate(request):
     mstream = StringIO.StringIO()
     validate_code = create_validate_code()

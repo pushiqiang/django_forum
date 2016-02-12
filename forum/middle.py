@@ -5,6 +5,8 @@ from django.core.cache import cache
 #    cache = cache['memcache']
 #except ImportError as e:
 #    cache = cache['default']
+#
+#中间件具体实现（中间件就是实现特定方法的类）
 
 class CommonMiddleware(object):
     def process_request(self, request):
