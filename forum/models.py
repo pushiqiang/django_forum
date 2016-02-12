@@ -24,7 +24,7 @@ class LoginUser(AbstractUser):
         return self.get_username()
 
     def checkfriend(self,username):
-        if username in self.priendsa.all():
+        if username in self.friends.all():
             return True
 	else:
             return False

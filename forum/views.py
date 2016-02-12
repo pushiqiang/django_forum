@@ -16,6 +16,13 @@ from django.utils.timezone import now, timedelta
 from datetime import datetime
 from django.core.cache import cache
 
+from forum.validate import create_validate_code
+
+try:
+    import cStringIO as StringIO
+except ImportError:
+    import StringIO
+
 #try:
 #    cache = cache['memcache']
 #except ImportError as e:
@@ -247,10 +254,13 @@ class PostCreate(CreateView):
 
     def form_valid(self, form):
         # 自定义的代码逻辑写在这里
+        validate = self.request.POST.get('validate',None)
+        formdata = form.cleaned_data
+        if self.request.session.get('validate',None) != validate:
+            return HttpResponse("验证码错误！<a href='/'>返回</a>")
         user = LoginUser.objects.get(username=self.request.user.username)
         #form.instance.author = user
         #form.instance.last_response  = user
-        formdata = form.cleaned_data
         formdata['author'] = user
         formdata['last_response'] = user
         p = Post(**formdata)
@@ -351,3 +361,15 @@ class SearchView(ListView):
         #在帖子的标题和内容中搜索关键字
         post_list = Post.objects.only('title','content').filter(Q(title__icontains=q)|Q(content__icontains=q));
         return post_list
+
+
+def validate(request):
+    mstream = StringIO.StringIO()
+    validate_code = create_validate_code()
+    img = validate_code[0]
+    img.save(mstream, "GIF")
+    request.session['validate'] = validate_code[1]
+    return HttpResponse(mstream.getvalue(), "image/gif")
+
+
+

@@ -28,4 +28,6 @@ urlpatterns = patterns('',
     url(r'^user/messagedetail/(?P<pk>\d+)/$', MessageDetail.as_view(), name='message_detail'),#pk为消息id
     url(r'^user/message/sendto/(?P<pk>\d+)/$', MessageCreate.as_view(), name='send_message'),#pk为对方用户id
     url(r'^search/$', SearchView.as_view(), name='search'),
+
+    url(r'^validate/$', 'forum.views.validate', name='validate'),
 )

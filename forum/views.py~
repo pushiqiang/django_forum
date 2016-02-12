@@ -5,25 +5,28 @@ from django.http import HttpResponse,HttpResponseRedirect
 from django.views.generic import View,TemplateView,ListView,DetailView
 from django.views.generic.edit import CreateView,UpdateView,DeleteView,FormView
 from forum.models import Nav, Post, Comment, Application, LoginUser,Notice, Column, Message
-from forum.form import LoginUserForm
+from forum.form import MessageForm, PostForm, LoginUserForm
 from django.core.urlresolvers import reverse_lazy
-
-from django.utils.decorators import method_decorator 
 from django.contrib.auth.decorators import login_required  
 from django.contrib.auth import authenticate, login,logout
-
 from django.contrib.sites.models import get_current_site
 from django.core.mail import send_mail
-
+from django.db.models import Q
 from django.utils.timezone import now, timedelta
 from datetime import datetime
+from django.core.cache import cache
 
-from django.core.cache import caches
+from forum.validate import create_validate_code
 
 try:
-    cache = caches['memcache']
-except ImportError as e:
-    cache = caches['default']
+    import cStringIO as StringIO
+except ImportError:
+    import StringIO
+
+#try:
+#    cache = cache['memcache']
+#except ImportError as e:
+#    cache = cache['default']
 
 import logging
 
@@ -81,7 +84,7 @@ def userlogin(request,template_name='login.html'):
         next = request.GET.get('next',None)
         if next is None:
             next = reverse_lazy('index')
-        return render_to_response('login.html',{'next':next})
+        return render_to_response(template_name,{'next':next})
 
 def userlogout(request):
     logout(request)
@@ -165,10 +168,11 @@ class IndexView(BaseMixin,ListView):
 
     
 def postdetail(request,post_pk):
+    post_pk = int(post_pk)
     post = Post.objects.get(pk=post_pk)
     comment_list = post.comment_set.all() 
     if request.user.is_authenticated():
-        k= Notice.objects.filter(receiver=self.request.user,status=False).count()
+        k= Notice.objects.filter(receiver=request.user,status=False).count()
     else:
         k = 0         
     #统计帖子的访问访问次数
@@ -191,7 +195,7 @@ def makefriend(request,sender,receiver):
     receiver = LoginUser.objects.get(username=receiver)
     application = Application(sender=sender,receiver=receiver,status=0)
     application.save()
-    return HttpResponse("OK申请发送成功！%s-->%s"%(sender,receiver))
+    return HttpResponse("OK申请发送成功！%s-->%s;<a href='/'>返回</a>"%(sender,receiver))
 
 @login_required(login_url=reverse_lazy('user_login'))
 def shownotice(request):
@@ -200,7 +204,7 @@ def shownotice(request):
     return render_to_response('notice_list.html',{'notice_list':notice_list,'myfriends':myfriends},context_instance=RequestContext(request))
 
 def noticedetail(request,pk):
-    pass
+    pk = int(pk)
     notice = Notice.objects.get(pk=pk)
     notice.status = True
     notice.save()
@@ -212,8 +216,9 @@ def noticedetail(request,pk):
 
 
 def friendagree(request,pk,flag):
-    entity = Notice.objects.get(pk=pk)
     flag = int(flag)
+    pk = int(pk)
+    entity = Notice.objects.get(pk=pk)
     entity.status = True
     application = entity.event      #get(pk=entity.object_id)              #.update(status=flag)
     application.status=flag
@@ -228,20 +233,30 @@ def friendagree(request,pk,flag):
         str="拒绝加好友"
     return HttpResponse(str)
 
-def userpost(request):
-    #user_id = int(user_id)
-    user_posts = LoginUser.objects.get(username=request.user).post_set.all()
-    return render_to_response('user_posts.html',{'user_posts':user_posts},context_instance=RequestContext(request))
+class UserPostView(ListView):
+    template_name = 'user_posts.html'
+    context_object_name = 'user_posts'
+    paginate_by = PAGE_NUM
+
+    def get_queryset(self):
+        user_posts = Post.objects.filter(author=self.request.user)
+        return user_posts
+
 
 class PostCreate(CreateView):   
     model = Post
     template_name = 'form.html'
-    fields = ('title', 'column', 'type_name','content')
+    form_class = PostForm
+    #fields = ('title', 'column', 'type_name','content')
+    #SAE django1.5中fields失效，不知原因,故使用form_class
     success_url = reverse_lazy('user_post')
+    #这里我们必须使用reverse_lazy() 而不是reverse，因为在该文件导入时URL 还没有加载。
 
     def form_valid(self, form):
         # 自定义的代码逻辑写在这里
-        user = LoginUser.objects.get(username=self.request.user)
+        user = LoginUser.objects.get(username=self.request.user.username)
+        #form.instance.author = user
+        #form.instance.last_response  = user
         formdata = form.cleaned_data
         formdata['author'] = user
         formdata['last_response'] = user
@@ -249,39 +264,31 @@ class PostCreate(CreateView):
         p.save()
         user.levels += 5	#发帖一次积分加 5
         user.save()
-        return HttpResponse("发贴成功！")
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(PostCreate, self).dispatch(*args, **kwargs)
+        return HttpResponse("发贴成功！<a href='/'>返回</a>")
+     
 
 class PostUpdate(UpdateView):   
     model = Post
     template_name = 'form.html'
     success_url = reverse_lazy('user_post')             
 
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(MessageCreate, self).dispatch(*args, **kwargs)    
+
 
 class PostDelete(DeleteView):
     model = Post
     template_name = 'delete_confirm.html'
     success_url = reverse_lazy('user_post')  
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(PostDelete, self).dispatch(*args, **kwargs)  
+  
 
 @login_required(login_url=reverse_lazy('user_login'))
 def makecomment(request):
-    print "123"
     if request.method == 'POST':
         comment = request.POST.get("comment","")
         post_id = request.POST.get("post_id","")
         comment_id = request.POST.get("comment_id","")
 
         user = LoginUser.objects.get(username=request.user)
-	p = Post.objects.get(pk=post_id)
+        p = Post.objects.get(pk=post_id)
         p.responce_times += 1
         p.last_response = user
       
@@ -301,13 +308,15 @@ def makecomment(request):
 class MessageCreate(CreateView):
     model = Message
     template_name = 'form.html'
-    fields = ('content',)
+    form_class = MessageForm
+    #fields = ('content',)
+    #SAE django1.5中fields失效，不知原因,故使用form_class
     success_url = reverse_lazy('show_notice')
 
     def form_valid(self, form):
         # 自定义的代码逻辑写在这里
         sender = LoginUser.objects.get(username=self.request.user)
-        receiver_id = self.kwargs.get('pk','')
+        receiver_id = int(self.kwargs.get('pk'))
         receiver = LoginUser.objects.get(id=receiver_id)
         formdata = form.cleaned_data
         formdata['sender'] = sender
@@ -315,9 +324,7 @@ class MessageCreate(CreateView):
         m = Message(**formdata)
         m.save()
         return HttpResponse("消息发送成功！")
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(MessageCreate, self).dispatch(*args, **kwargs)
+
 
 class MessageDetail(DetailView):
     model = Message
@@ -330,12 +337,36 @@ def columnall(request):
     return render_to_response('column_list.html',{'column_list':column_list },context_instance=RequestContext(request))
 
 def columndetail(request,column_pk):
-    column_pk = int(column_pk)
     column_obj = Column.objects.get(pk=column_pk)
     column_posts = column_obj.post_set.all()
     
     return render_to_response('column_detail.html',{'column_obj':column_obj,'column_posts':column_posts },context_instance=RequestContext(request))    
 
-
-
  
+class SearchView(ListView):
+    template_name = 'search_result.html'
+    context_object_name = 'post_list'
+    paginate_by = PAGE_NUM
+
+    def get_context_data(self,**kwargs):
+        kwargs['q'] = self.request.GET.get('srchtxt','')
+        return super(SearchView,self).get_context_data(**kwargs)
+
+    def get_queryset(self):
+        #获取搜索的关键字
+        q = self.request.GET.get('srchtxt','')
+        #在帖子的标题和内容中搜索关键字
+        post_list = Post.objects.only('title','content').filter(Q(title__icontains=q)|Q(content__icontains=q));
+        return post_list
+
+
+def validate(request):
+    mstream = StringIO.StringIO()
+    validate_code = create_validate_code()
+    img = validate_code[0]
+    img.save(mstream, "GIF")
+    request.session['validate'] = validate_code[1]
+    return HttpResponse(mstream.getvalue(), "image/gif")
+
+
+

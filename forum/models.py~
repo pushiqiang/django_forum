@@ -127,7 +127,7 @@ class Comment(models.Model):				#评论
     
     @models.permalink
     def get_absolute_url(self):
-        return ('comment_detail', (), { 'comment_pk': self.pk })
+        return ('post_detail', (), { 'post_pk': self.post.pk })
         
 class Message(models.Model):			#好友消息
     sender = models.ForeignKey(settings.AUTH_USER_MODEL,related_name='message_sender')							#发送者
@@ -176,7 +176,10 @@ class Notice(models.Model):
     def __unicode__(self):
         return  u"%s的事件: %s" % (self.sender, self.description())
     def description(self):
-        return self.event.description()
+    	  if self.event:
+    	      return self.event.description()
+    	  return "No Event"
+        
     def reading(self):
         if not status:
             status = True
@@ -186,10 +189,14 @@ def post_save(sender, instance, signal, *args, **kwargs):
     if str(entity.created_at)[:19] == str(entity.updated_at)[:19]: 
         column = entity.column
         column.post_number += 1
-        print column.post_number
         column.save()
-     
-    
+
+def post_delete(sender, instance, signal, *args, **kwargs):
+    entity = instance
+    column = entity.column
+    column.post_number -= 1
+    column.save()
+        
 def comment_save(sender, instance, signal, *args, **kwargs):
     entity = instance
     if str(entity.created_at)[:19] == str(entity.updated_at)[:19]: 
@@ -218,3 +225,4 @@ signals.post_save.connect(comment_save, sender=Comment)
 signals.post_save.connect(application_save, sender=Message)
 signals.post_save.connect(message_save, sender=Application)
 signals.post_save.connect(post_save, sender=Post)
+signals.post_delete.connect(post_delete, sender=Post)
