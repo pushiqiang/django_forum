@@ -254,10 +254,13 @@ class PostCreate(CreateView):
 
     def form_valid(self, form):
         # 自定义的代码逻辑写在这里
+        validate = self.request.POST.get('validate',None)
+        formdata = form.cleaned_data
+        if self.request.session.get('validate',None) != validate:
+            return HttpResponse("验证码错误！<a href='/'>返回</a>")
         user = LoginUser.objects.get(username=self.request.user.username)
         #form.instance.author = user
         #form.instance.last_response  = user
-        formdata = form.cleaned_data
         formdata['author'] = user
         formdata['last_response'] = user
         p = Post(**formdata)

@@ -47,8 +47,8 @@ def get_forum_info():
     today = now().date()
     lastday = today - oneday
     todayend = today + oneday
-    post_number = Post.objects.all().count()
-    account_number = LoginUser.objects.all().count()
+    post_number = Post.objects.count()
+    account_number = LoginUser.objects.count()
 
     lastday_post_number = cache.get('lastday_post_number', None)
     today_post_number = cache.get('today_post_number', None)
