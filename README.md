@@ -16,7 +16,7 @@ github项目:[https://github.com/pushiqiang/django_forum.git](https://github.com
 qq:983003089
 
 
-功能：
+更新：
 ---
 2016.2.12  更新发帖验证码功能
 
