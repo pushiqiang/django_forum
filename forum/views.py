@@ -215,10 +215,10 @@ def noticedetail(request,pk):
     notice = Notice.objects.get(pk=pk)
     notice.status = True
     notice.save()
-    if notice.type == 0:
-        post_id = notice.event.id
+    if notice.type == 0:          #评论通知
+        post_id = notice.event.post.id
         return HttpResponseRedirect(reverse_lazy('post_detail',kwargs ={"post_pk":post_id}))
-    message_id = notice.event.id
+    message_id = notice.event.id  #消息通知
     return HttpResponseRedirect(reverse_lazy('message_detail',kwargs ={"pk":message_id}))
 
 #好友同意/拒绝（flag 1同意，2拒绝）
