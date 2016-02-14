@@ -58,7 +58,7 @@
 		积分：{{ post.author.levels }}<br>
 		{% if user.username %}
           {% ifnotequal  post.author.username user.username %}
-                      {%if not post.author|checkfriend:user.username %}
+                      {%if not post.author|checkfriend:user %}
 				              <a href="{% url 'make_friend' user.username post.author.username %}">加好友</a>
 		                  {% else %}
 				              <a href="{% url 'send_message' post.author.id %}">发消息</a>
@@ -104,7 +104,7 @@
 			积分：{{ comment.author.levels }}<br>
 			{% if user.username %}
 			    {% ifnotequal  comment.author.username user.username %}
-		        	{%if not comment.author|checkfriend:user.username %}
+		        	{%if not comment.author|checkfriend:user %}
 				        <a href="{% url 'make_friend' user.username comment.author.username %}">加好友</a>
               {% else %}
 				        <a href="{% url 'send_message' comment.author.id %}">发消息</a>
