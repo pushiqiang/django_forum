@@ -201,10 +201,11 @@ def post_delete(sender, instance, signal, *args, **kwargs):	#删帖触发板块�
 def comment_save(sender, instance, signal, *args, **kwargs):    
     entity = instance
     if str(entity.created_at)[:19] == str(entity.updated_at)[:19]: 
-        event = Notice(sender=entity.author,receiver=entity.post.author,event = entity,type=0) 
-        event.save()
-        if entity.comment_parent is not None:		
-            if entity.author.id != entity.comment_parent.author.id:
+    	if entity.author != entity.post.author:                       #作者的回复不给作者通知
+            event = Notice(sender=entity.author,receiver=entity.post.author,event = entity,type=0) 
+            event.save()
+        if entity.comment_parent is not None:		              #回复评论给要评论的人通知
+            if entity.author.id != entity.comment_parent.author.id:   #自己给自己写评论不通知
                 event = Notice(sender=entity.author,receiver=entity.comment_parent.author,event = entity,type=0) 
                 event.save()
 
