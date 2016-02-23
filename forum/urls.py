@@ -3,6 +3,9 @@ from django.conf.urls import patterns, include, url
 from django.contrib.auth.decorators import login_required
 from forum.views import IndexView,PostCreate,PostUpdate,PostDelete,MessageCreate,MessageDetail,SearchView,UserPostView
 from django.contrib import admin
+
+from forum.manager_delete_decorator import delete_permission
+
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -19,7 +22,7 @@ urlpatterns = patterns('',
     url(r'^user/postlist/$', UserPostView.as_view(), name='user_post'),
     url(r'^user/post_create/$', login_required(PostCreate.as_view()), name='post_create'), 
     url(r'^user/post_update/(?P<pk>\d+)/$', login_required(PostUpdate.as_view()), name='post_update'),   	
-    url(r'^user/post_delete/(?P<pk>\d+)/$', login_required(PostDelete.as_view()), name='post_delete'), 
+    url(r'^user/post_delete/(?P<pk>\d+)/$', delete_permission(login_required(PostDelete.as_view())), name='post_delete'), 
     #url(r'^sendmessage/(?P<sender>\w+)/(?P<receiver>\w+)/$', 'forum.views.sendmessage', name='send_message'), 
     url(r'^user/notices/$', 'forum.views.shownotice', name='show_notice'),
     url(r'^user/notices/(?P<pk>\d+)/$', 'forum.views.noticedetail', name='notice_detail'),    
