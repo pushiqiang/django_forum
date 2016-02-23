@@ -36,9 +36,10 @@ qq:983003089
 ---
 1.中间件技术（实现在线人数统计）。<br>
 2.自定义过滤器（好友判断)。<br>
-3.通用类视图（ListView，DetailView，CreateView，UpdateView，DeleteView）。<br>
-4.django信号机制+ContentType机制(实现帖子消息评论回复功能）。<br>
-5.少量缓存功能。<br>
+3.装饰器（删帖权限验证装饰器@delete_permission 仿 @login_required）。<br>
+4.通用类视图（ListView，DetailView，CreateView，UpdateView，DeleteView）。<br>
+5.django信号机制+ContentType机制(实现帖子消息评论回复功能）。<br>
+6.少量缓存功能。<br>
 
 <br>
 PS：在网上找了很久基于django的论坛系统，有很多blog系统，却很少发现forum系统，有个lbforum系统还是个论坛引擎框架，故一直想自己写个小微型的django论坛系统，于是趁着过年几天的空闲写了这么个系统，权当练手了，可能还有很多bug和待改善的地方，大神勿笑，有兴趣的朋友可以看看。<br>
