@@ -382,5 +382,30 @@ def validate(request):
     request.session['validate'] = validate_code[1]
     return HttpResponse(mstream.getvalue(), "image/gif")
 
+#编辑器图片上传
+def upload_image(request):
+    if request.method == 'POST':
+        callback = request.GET.get('CKEditorFuncNum')
+        content = request.FILES["upload"]
+        file_name = "upload_images/" + time.strftime("%Y%m%d%H%M%S",time.localtime()) + "_" + content.name
+        try:
+            from os import environ  
+            online = environ.get("APP_NAME", "")
+      
+            if online:  
+                bucket = "mystorage"         
+                import sae.storage  
+                s = sae.storage.Client()  
+                ob = sae.storage.Object(content.read())  
+                url = s.put(bucket, file_name, ob)  
+                 
+            else:  
+                url = None  
 
+        except Exception, e:
+            url = str(e)
+        res = r"<script>window.parent.CKEDITOR.tools.callFunction("+callback+",'"+url+"', '');</script>"
+        return HttpResponse(res)
+    else:
+        raise Http404()
 

@@ -33,4 +33,5 @@ urlpatterns = patterns('',
     url(r'^search/$', SearchView.as_view(), name='search'),
 
     url(r'^validate/$', 'forum.views.validate', name='validate'),
+    url(r'^uploadimage/','forum.views.upload_image',name='upload_image'),
 )

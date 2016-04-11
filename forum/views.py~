@@ -202,25 +202,26 @@ def makefriend(request,sender,receiver):
     application.save()
     return HttpResponse("OK申请发送成功！%s-->%s;<a href='/'>返回</a>"%(sender,receiver))
 
-
+#消息通知
 @login_required(login_url=reverse_lazy('user_login'))
 def shownotice(request):
     notice_list = Notice.objects.filter(receiver=request.user,status=False)
     myfriends = LoginUser.objects.get(username=request.user).friends.all()
     return render_to_response('notice_list.html',{'notice_list':notice_list,'myfriends':myfriends},context_instance=RequestContext(request))
 
+#具体通知
 def noticedetail(request,pk):
     pk = int(pk)
     notice = Notice.objects.get(pk=pk)
     notice.status = True
     notice.save()
-    if notice.type == 0:
-        post_id = notice.event.id
+    if notice.type == 0:          #评论通知
+        post_id = notice.event.post.id
         return HttpResponseRedirect(reverse_lazy('post_detail',kwargs ={"post_pk":post_id}))
-    message_id = notice.event.id
+    message_id = notice.event.id  #消息通知
     return HttpResponseRedirect(reverse_lazy('message_detail',kwargs ={"pk":message_id}))
 
-
+#好友同意/拒绝（flag 1同意，2拒绝）
 def friendagree(request,pk,flag):
     flag = int(flag)
     pk = int(pk)
@@ -239,6 +240,7 @@ def friendagree(request,pk,flag):
         str="拒绝加好友"
     return HttpResponse(str)
 
+#用户已发贴
 class UserPostView(ListView):
     template_name = 'user_posts.html'
     context_object_name = 'user_posts'
@@ -248,7 +250,7 @@ class UserPostView(ListView):
         user_posts = Post.objects.filter(author=self.request.user)
         return user_posts
 
-
+#发帖
 class PostCreate(CreateView):   
     model = Post
     template_name = 'form.html'
@@ -275,20 +277,21 @@ class PostCreate(CreateView):
         user.save()
         return HttpResponse("发贴成功！<a href='/'>返回</a>")
      
-
+#编辑贴
 class PostUpdate(UpdateView):   
     model = Post
     template_name = 'form.html'
     success_url = reverse_lazy('user_post')             
 
 
-
+#删贴
 class PostDelete(DeleteView):
     model = Post
     template_name = 'delete_confirm.html'
     success_url = reverse_lazy('user_post')  
   
 
+#评论
 @login_required(login_url=reverse_lazy('user_login'))
 def makecomment(request):
     if request.method == 'POST':
@@ -314,6 +317,7 @@ def makecomment(request):
         
     return HttpResponse("评论成功")
 
+#发送消息
 class MessageCreate(CreateView):
     model = Message
     template_name = 'form.html'
@@ -334,24 +338,25 @@ class MessageCreate(CreateView):
         m.save()
         return HttpResponse("消息发送成功！")
 
-
+#具体消息
 class MessageDetail(DetailView):
     model = Message
     template_name = 'message.html'
     context_object_name = 'message'
 
-
+#所有板块
 def columnall(request):
     column_list = Column.objects.all()
     return render_to_response('column_list.html',{'column_list':column_list },context_instance=RequestContext(request))
 
+#每个板块
 def columndetail(request,column_pk):
     column_obj = Column.objects.get(pk=column_pk)
     column_posts = column_obj.post_set.all()
     
     return render_to_response('column_detail.html',{'column_obj':column_obj,'column_posts':column_posts },context_instance=RequestContext(request))    
 
- 
+#搜索 
 class SearchView(ListView):
     template_name = 'search_result.html'
     context_object_name = 'post_list'
@@ -368,7 +373,7 @@ class SearchView(ListView):
         post_list = Post.objects.only('title','content').filter(Q(title__icontains=q)|Q(content__icontains=q));
         return post_list
 
-
+#验证码
 def validate(request):
     mstream = StringIO.StringIO()
     validate_code = create_validate_code()
