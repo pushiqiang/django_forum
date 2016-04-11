@@ -50,4 +50,7 @@ PS：在网上找了很久基于django的论坛系统，有很多blog系统，�
 ![demo2](demo/f2.jpg)
 ![demo3](demo/f3.jpg)
 ![demo4](demo/f4.jpg)
+![demo5](demo/1.png)
+![demo6](demo/2.png)
+![demo7](demo/3.png)
 
