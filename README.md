@@ -12,15 +12,15 @@ This is a small and simple forum which uses the Django Framework (written in Pyt
 python 2.7 + django 1.7<br>
 系统部署于新浪云SAE (django1.5)(关于SAE部署静态文件问题，SAE默认是static，这时可以设置STATIC_ROOT=os.path.join(BASE_DIR, "static")，在本地执行了collectstatic后，将static文件夹部署)<br>
 demo演示:[http://pushiqiang.sinaapp.com/](http://pushiqiang.sinaapp.com/)<br>
-github项目:[https://github.com/pushiqiang/django_forum.git](https://github.com/pushiqiang/django_forum.git)<br>
+github地址:[https://github.com/pushiqiang/django_forum.git](https://github.com/pushiqiang/django_forum.git)<br>
 qq:983003089
 
 
 更新：
 ---
 2016.2.12  更新发帖验证码功能<br>
-2016.2.23  添加删帖权限验证装饰器（@delete_permission 仿 @login_required），简单权限管理，普通用户不允许删帖，只有用户的privilege字段为1才允许删帖。
-
+2016.2.23  添加删帖权限验证装饰器（@delete_permission 仿 @login_required），简单权限管理，普通用户不允许删帖，只有用户的privilege字段为1才允许删帖。<br>
+2016.4.11  添加ckeditor编辑器图片上传插入功能，因为sae代码空间没有IO权限，故将图片上传到sae的storage
 
 功能：
 ---
