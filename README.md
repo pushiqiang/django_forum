@@ -2,6 +2,8 @@
 This is a small and simple forum which uses the Django Framework (written in Python language).<br>
 这是一个基于django的小型论坛系统
 
+新手入门之作，初学者代码质量很差，严重不满足pep8规范，木有时间重构，大家看看就行
+
 这是个基于 Python django 的小型论坛系统
 ---
 本系统实现了一般论坛的主要功能，包括发帖，评论，评论回复，评论通知，加好友，好友消息,消息通知，简单积分规则。
