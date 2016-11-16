@@ -1,4 +1,5 @@
 # django_forum
+# 个人博客：pushiqiangblog.applinzi.com
 This is a small and simple forum which uses the Django Framework (written in Python language).<br>
 这是一个基于django的小型论坛系统
 
