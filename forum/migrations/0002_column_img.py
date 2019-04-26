@@ -14,7 +14,10 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='column',
             name='img',
-            field=models.CharField(default=b'/static/tx/default.jpg', max_length=200, verbose_name='\u56fe\u6807'),
+            field=models.CharField(
+                default=b'/static/tx/default.jpg',
+                max_length=200,
+                verbose_name='\u56fe\u6807'),
             preserve_default=True,
         ),
     ]

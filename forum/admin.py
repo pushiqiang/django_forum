@@ -1,5 +1,5 @@
 from django.contrib import admin
-from forum.models import LoginUser,Nav,Column,PostType,Post,Comment,Message,Application,Notice
+from forum.models import LoginUser, Nav, Column, PostType, Post, Comment, Message, Application, Notice
 # Register your models here.
 
 admin.site.register(LoginUser)

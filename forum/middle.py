@@ -1,5 +1,6 @@
 #coding:utf-8
 from django.core.cache import cache
+
 #缓存
 #try:
 #    cache = cache['memcache']
@@ -7,6 +8,7 @@ from django.core.cache import cache
 #    cache = cache['default']
 #
 #中间件具体实现（中间件就是实现特定方法的类）
+
 
 class CommonMiddleware(object):
     def process_request(self, request):

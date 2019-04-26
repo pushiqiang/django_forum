@@ -16,18 +16,17 @@ ENABLE_SSL = False
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-from sae.const import (MYSQL_HOST, MYSQL_HOST_S,
-    MYSQL_PORT, MYSQL_USER, MYSQL_PASS, MYSQL_DB
-)
+from sae.const import (MYSQL_HOST, MYSQL_HOST_S, MYSQL_PORT, MYSQL_USER,
+                       MYSQL_PASS, MYSQL_DB)
 
 DATABASES = {
     'default': {
-        'ENGINE':   'django.db.backends.mysql',
-        'NAME':     MYSQL_DB,
-        'USER':     MYSQL_USER, 
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': MYSQL_DB,
+        'USER': MYSQL_USER,
         'PASSWORD': MYSQL_PASS,
-        'HOST':     MYSQL_HOST,
-        'PORT':     MYSQL_PORT,
+        'HOST': MYSQL_HOST,
+        'PORT': MYSQL_PORT,
     }
 }
 
@@ -43,7 +42,6 @@ DEBUG = True
 TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -73,11 +71,8 @@ ROOT_URLCONF = 'myforum.urls'
 
 WSGI_APPLICATION = 'myforum.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
-
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
@@ -96,7 +91,7 @@ AUTH_USER_MODEL = "forum.LoginUser"
 
 #会话(登录)超时设置
 SESSION_SAVE_EVERY_REQUEST = True
-SESSION_COOKIE_AGE = 60*10
+SESSION_COOKIE_AGE = 60 * 10
 
 #cache配置#########################################
 CACHES = {
@@ -107,29 +102,26 @@ CACHES = {
             'MAX_ENTRIES': 1024,
         }
     },
-#    'memcache': {
-#        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-#        #'LOCATION': 'unix:/home/billvsme/memcached.sock',
-#        'LOCATION': '127.0.0.1:11211',
-#        'options': {
-#            'MAX_ENTRIES': 1024,
-#        }
-#    },
+    #    'memcache': {
+    #        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+    #        #'LOCATION': 'unix:/home/billvsme/memcached.sock',
+    #        'LOCATION': '127.0.0.1:11211',
+    #        'options': {
+    #            'MAX_ENTRIES': 1024,
+    #        }
+    #    },
 }
-
 
 #email配置#########################################
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.126.com'                       #SMTP地址 例如: smtp.163.com
-EMAIL_PORT = 25                       #SMTP端口 例如: 25
-EMAIL_HOST_USER = ''                  #我自己的邮箱 例如: xxxxxx@126.com
-EMAIL_HOST_PASSWORD = ''              #我的邮箱密码 例如  xxxxxxxxx
+EMAIL_HOST = 'smtp.126.com'  #SMTP地址 例如: smtp.163.com
+EMAIL_PORT = 25  #SMTP端口 例如: 25
+EMAIL_HOST_USER = ''  #我自己的邮箱 例如: xxxxxx@126.com
+EMAIL_HOST_PASSWORD = ''  #我的邮箱密码 例如  xxxxxxxxx
 #EMAIL_SUBJECT_PREFIX = u'v'       #为邮件Subject-line前缀,默认是'[django]'
-EMAIL_USE_TLS = True                  #与SMTP服务器通信时，是否启动TLS链接(安全链接)。默认是false
+EMAIL_USE_TLS = True  #与SMTP服务器通信时，是否启动TLS链接(安全链接)。默认是false
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
@@ -137,13 +129,9 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 STATIC_URL = '/static/'
 
 # Additional locations of static files
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
-    
-)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"), )
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-
 )
