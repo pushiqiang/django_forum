@@ -6,7 +6,7 @@ from forum.models import Message, Post, LoginUser
 class MessageForm(forms.ModelForm):
     class Meta:
         model = Message
-        fields = ('content', )
+        fields = ('content',)
 
 
 class PostForm(forms.ModelForm):
@@ -16,7 +16,7 @@ class PostForm(forms.ModelForm):
 
 
 class LoginUserForm(forms.ModelForm):
-    #错误信息
+    # 错误信息
     error_messages = {
         'duplicate_username': u"此用户已存在.",
         'password_mismatch': u"两次密码不相等.",
@@ -26,7 +26,7 @@ class LoginUserForm(forms.ModelForm):
     username = forms.RegexField(
         max_length=30,
         regex=r'^[\w.@+-]+$',
-        #错误信息 invalid 表示username不合法的错误信息, required 表示没填的错误信息
+        # 错误信息 invalid 表示username不合法的错误信息, required 表示没填的错误信息
         error_messages={
             'invalid': u"该值只能包含字母、数字和字符@/./+/-/_",
             'required': u"用户名未填"
@@ -65,7 +65,7 @@ class LoginUserForm(forms.ModelForm):
     def clean_email(self):
         email = self.cleaned_data["email"]
 
-        #判断是这个email 用户是否存在
+        # 判断是这个email 用户是否存在
         try:
             LoginUser._default_manager.get(email=email)
         except LoginUser.DoesNotExist:

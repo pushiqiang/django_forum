@@ -1,4 +1,4 @@
-#coding:utf-8
+# coding:utf-8
 import datetime
 
 from django.db import models
@@ -8,6 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db.models import signals
 from django.urls import reverse_lazy
+
 
 # Create your models here.
 
@@ -51,16 +52,16 @@ class Nav(models.Model):
         return self.name
 
 
-class Column(models.Model):  #板块
+class Column(models.Model):  # 板块
     name = models.CharField(max_length=30)
     manager = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='column_manager', on_delete=models.PROTECT)  #版主
+        settings.AUTH_USER_MODEL, related_name='column_manager', on_delete=models.PROTECT)  # 版主
     parent = models.ForeignKey(
         'self', blank=True, null=True, related_name='childcolumn', on_delete=models.PROTECT)
     description = models.TextField()
     img = models.CharField(
         max_length=200, default='/static/tx/default.jpg', verbose_name=u'图标')
-    post_number = models.IntegerField(default=0)  #主题数
+    post_number = models.IntegerField(default=0)  # 主题数
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -76,7 +77,7 @@ class Column(models.Model):  #板块
         return reverse_lazy('column_detail', kwargs={"column_pk": self.pk})
 
 
-class PostType(models.Model):  #文章类型
+class PostType(models.Model):  # 文章类型
     type_name = models.CharField(max_length=30)
     description = models.TextField()
     created_at = models.DateTimeField(default=datetime.datetime.now)
@@ -89,17 +90,17 @@ class PostType(models.Model):  #文章类型
         return self.type_name
 
 
-class Post(models.Model):  #文章
+class Post(models.Model):  # 文章
     title = models.CharField(max_length=30)
     author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='post_author', on_delete=models.PROTECT)  #作者
-    column = models.ForeignKey(Column, on_delete=models.PROTECT)  #所属板块
-    type_name = models.ForeignKey(PostType, on_delete=models.PROTECT)  #文章类型
+        settings.AUTH_USER_MODEL, related_name='post_author', on_delete=models.PROTECT)  # 作者
+    column = models.ForeignKey(Column, on_delete=models.PROTECT)  # 所属板块
+    type_name = models.ForeignKey(PostType, on_delete=models.PROTECT)  # 文章类型
     content = models.TextField()
 
-    view_times = models.IntegerField(default=0)  #浏览次数
-    responce_times = models.IntegerField(default=0)  #回复次数
-    last_response = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)  #最后回复者
+    view_times = models.IntegerField(default=0)  # 浏览次数
+    responce_times = models.IntegerField(default=0)  # 回复次数
+    last_response = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)  # 最后回复者
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -119,7 +120,7 @@ class Post(models.Model):  #文章
         return reverse_lazy('post_detail', kwargs={"post_pk": self.pk})
 
 
-class Comment(models.Model):  #评论
+class Comment(models.Model):  # 评论
     post = models.ForeignKey(Post, on_delete=models.PROTECT)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     comment_parent = models.ForeignKey(
@@ -145,11 +146,11 @@ class Comment(models.Model):  #评论
         return reverse_lazy('post_detail', kwargs={"post_pk": self.post.pk})
 
 
-class Message(models.Model):  #好友消息
+class Message(models.Model):  # 好友消息
     sender = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='message_sender', on_delete=models.PROTECT)  #发送者
+        settings.AUTH_USER_MODEL, related_name='message_sender', on_delete=models.PROTECT)  # 发送者
     receiver = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='message_receiver', on_delete=models.PROTECT)  #接收者
+        settings.AUTH_USER_MODEL, related_name='message_receiver', on_delete=models.PROTECT)  # 接收者
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -162,12 +163,12 @@ class Message(models.Model):  #好友消息
         verbose_name_plural = u'消息'
 
 
-class Application(models.Model):  #好友申请
+class Application(models.Model):  # 好友申请
     sender = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='appli_sender', on_delete=models.PROTECT)  #发送者
+        settings.AUTH_USER_MODEL, related_name='appli_sender', on_delete=models.PROTECT)  # 发送者
     receiver = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='appli_receiver', on_delete=models.PROTECT)  #接收者
-    status = models.IntegerField(default=0)  #申请状态 0:未查看 1:同意 2:不同意
+        settings.AUTH_USER_MODEL, related_name='appli_receiver', on_delete=models.PROTECT)  # 接收者
+    status = models.IntegerField(default=0)  # 申请状态 0:未查看 1:同意 2:不同意
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -181,15 +182,15 @@ class Application(models.Model):  #好友申请
 
 class Notice(models.Model):
     sender = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='notice_sender', on_delete=models.PROTECT)  #发送者
+        settings.AUTH_USER_MODEL, related_name='notice_sender', on_delete=models.PROTECT)  # 发送者
     receiver = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='notice_receiver', on_delete=models.PROTECT)  #接收者
+        settings.AUTH_USER_MODEL, related_name='notice_receiver', on_delete=models.PROTECT)  # 接收者
     content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
     object_id = models.PositiveIntegerField()
     event = GenericForeignKey('content_type', 'object_id')
 
-    status = models.BooleanField(default=False)  #是否阅读
-    type = models.IntegerField()  #通知类型 0:评论 1:好友消息 2:好友申请
+    status = models.BooleanField(default=False)  # 是否阅读
+    type = models.IntegerField()  # 通知类型 0:评论 1:好友消息 2:好友申请
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -214,13 +215,13 @@ class Notice(models.Model):
 def post_save(sender, instance, signal, *args, **kwargs):
     entity = instance
     if str(entity.created_at)[:19] == str(
-            entity.updated_at)[:19]:  #第一次发帖操作，编辑不操作
+            entity.updated_at)[:19]:  # 第一次发帖操作，编辑不操作
         column = entity.column
         column.post_number += 1
         column.save()
 
 
-def post_delete(sender, instance, signal, *args, **kwargs):  #删帖触发板块帖子数减1
+def post_delete(sender, instance, signal, *args, **kwargs):  # 删帖触发板块帖子数减1
     entity = instance
     column = entity.column
     column.post_number -= 1
@@ -230,15 +231,15 @@ def post_delete(sender, instance, signal, *args, **kwargs):  #删帖触发板块
 def comment_save(sender, instance, signal, *args, **kwargs):
     entity = instance
     if str(entity.created_at)[:19] == str(entity.updated_at)[:19]:
-        if entity.author != entity.post.author:  #作者的回复不给作者通知
+        if entity.author != entity.post.author:  # 作者的回复不给作者通知
             event = Notice(
                 sender=entity.author,
                 receiver=entity.post.author,
                 event=entity,
                 type=0)
             event.save()
-        if entity.comment_parent is not None:  #回复评论给要评论的人通知
-            if entity.author.id != entity.comment_parent.author.id:  #自己给自己写评论不通知
+        if entity.comment_parent is not None:  # 回复评论给要评论的人通知
+            if entity.author.id != entity.comment_parent.author.id:  # 自己给自己写评论不通知
                 event = Notice(
                     sender=entity.author,
                     receiver=entity.comment_parent.author,

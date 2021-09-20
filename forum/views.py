@@ -1,4 +1,10 @@
 # coding:utf-8
+import os
+import time
+import logging
+
+from io import BytesIO
+
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http.response import Http404
@@ -8,6 +14,7 @@ from forum.models import Nav, Post, Comment, Application, LoginUser, Notice, Col
 from forum.form import MessageForm, PostForm, LoginUserForm
 from django.urls import reverse_lazy
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.sites.shortcuts import get_current_site
@@ -17,15 +24,6 @@ from django.utils.timezone import now, timedelta
 from django.core.cache import cache
 
 from forum.validate import create_validate_code
-
-from io import BytesIO
-
-# try:
-#    cache = cache['memcache']
-# except ImportError as e:
-#    cache = cache['default']
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +41,7 @@ def get_online_ips_count():
 
 def get_forum_info():
     """获取 论坛信息，贴子数，用户数，昨日发帖数，今日发帖数"""
-    #请使用缓存
+    # 请使用缓存
     oneday = timedelta(days=1)
     today = now().date()
     lastday = today - oneday
@@ -83,7 +81,7 @@ def userlogin(request, template_name='login.html'):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            user.levels += 1  #登录一次积分加 1
+            user.levels += 1  # 登录一次积分加 1
             user.save()
         return HttpResponseRedirect(next)
     else:
@@ -109,32 +107,32 @@ def userregister(request):
 
         form = LoginUserForm(request.POST)
         errors = []
-        #验证表单是否正确
+        # 验证表单是否正确
         if form.is_valid():
             current_site = get_current_site(request)
             site_name = current_site.name
             domain = current_site.domain
             title = u"欢迎来到 %s ！" % site_name
-            message = u"你好！ %s ,感谢注册 %s ！\n\n" % (username,site_name) + \
+            message = u"你好！ %s ,感谢注册 %s ！\n\n" % (username, site_name) + \
                       u"请牢记以下信息：\n" + \
-                      u"用户名：%s" % username+"\n" + \
-                      u"邮箱：%s" % email+"\n" + \
-                      u"网站：http://%s" % domain+"\n\n"
+                      u"用户名：%s" % username + "\n" + \
+                      u"邮箱：%s" % email + "\n" + \
+                      u"网站：http://%s" % domain + "\n\n"
             from_email = None
             try:
                 send_mail(title, message, from_email, [email])
             except Exception as e:
                 logger.error(
-                    u'[UserControl]用户注册邮件发送失败:[%s]/[%s]' % (username, email))
+                    u'用户注册邮件发送失败:username: %s, email: %s' % (username, email), exc_info=True)
                 return HttpResponse(u"发送邮件错误!\n注册失败", status=500)
 
             new_user = form.save()
             user = authenticate(username=username, password=password)
             login(request, user)
         else:
-            #如果表单不正确,保存错误到errors列表中
+            # 如果表单不正确,保存错误到errors列表中
             for k, v in form.errors.items():
-                #v.as_text() 详见django.forms.util.ErrorList 中
+                # v.as_text() 详见django.forms.util.ErrorList 中
                 errors.append(v.as_text())
 
         return render(request, 'user_ok.html', {"errors": errors})
@@ -171,7 +169,7 @@ class IndexView(BaseMixin, ListView):
     queryset = Post.objects.all()
     template_name = 'index.html'
     context_object_name = 'post_list'
-    paginate_by = PAGE_NUM  #分页--每页的数目
+    paginate_by = PAGE_NUM  # 分页--每页的数目
 
     def get_context_data(self, **kwargs):
         kwargs['foruminfo'] = get_forum_info()
@@ -189,7 +187,7 @@ def postdetail(request, post_pk):
         k = Notice.objects.filter(receiver=request.user, status=False).count()
     else:
         k = 0
-    #统计帖子的访问访问次数
+    # 统计帖子的访问访问次数
     if 'HTTP_X_FORWARDED_FOR' in request.META:
         ip = request.META['HTTP_X_FORWARDED_FOR']
     else:
@@ -203,10 +201,10 @@ def postdetail(request, post_pk):
         visited_ips.append(ip)
     cache.set(title, visited_ips, 15 * 60)
     return render(request, 'post_detail.html', {
-            'post': post,
-            'comment_list': comment_list,
-            'message_number': k
-        })
+        'post': post,
+        'comment_list': comment_list,
+        'message_number': k
+    })
 
 
 def makefriend(request, sender, receiver):
@@ -225,9 +223,9 @@ def shownotice(request):
     notice_list = Notice.objects.filter(receiver=request.user, status=False)
     myfriends = LoginUser.objects.get(username=request.user).friends.all()
     return render(request, 'notice_list.html', {
-            'notice_list': notice_list,
-            'myfriends': myfriends
-        })
+        'notice_list': notice_list,
+        'myfriends': myfriends
+    })
 
 
 def noticedetail(request, pk):
@@ -236,11 +234,11 @@ def noticedetail(request, pk):
     notice = Notice.objects.get(pk=pk)
     notice.status = True
     notice.save()
-    if notice.type == 0:  #评论通知
+    if notice.type == 0:  # 评论通知
         post_id = notice.event.post.id
         return HttpResponseRedirect(
             reverse_lazy('post_detail', kwargs={"post_pk": post_id}))
-    message_id = notice.event.id  #消息通知
+    message_id = notice.event.id  # 消息通知
     return HttpResponseRedirect(
         reverse_lazy('message_detail', kwargs={"pk": message_id}))
 
@@ -281,26 +279,26 @@ class PostCreate(CreateView):
     model = Post
     template_name = 'form.html'
     form_class = PostForm
-    #fields = ('title', 'column', 'type_name','content')
-    #SAE django1.5中fields失效，不知原因,故使用form_class
+    # fields = ('title', 'column', 'type_name','content')
+    # SAE django1.5中fields失效，不知原因,故使用form_class
     success_url = reverse_lazy('user_post')
 
-    #这里我们必须使用reverse_lazy() 而不是reverse，因为在该文件导入时URL 还没有加载。
+    # 这里我们必须使用reverse_lazy() 而不是reverse，因为在该文件导入时URL 还没有加载。
 
     def form_valid(self, form):
-        #此处有待加强安全验证
+        # 此处有待加强安全验证
         validate = self.request.POST.get('validate', None)
         formdata = form.cleaned_data
         if self.request.session.get('validate', None) != validate:
             return HttpResponse("验证码错误！<a href='/'>返回</a>")
         user = LoginUser.objects.get(username=self.request.user.username)
-        #form.instance.author = user
-        #form.instance.last_response  = user
+        # form.instance.author = user
+        # form.instance.last_response  = user
         formdata['author'] = user
         formdata['last_response'] = user
         p = Post(**formdata)
         p.save()
-        user.levels += 5  #发帖一次积分加 5
+        user.levels += 5  # 发帖一次积分加 5
         user.save()
         return HttpResponse("发贴成功！<a href='/'>返回</a>")
 
@@ -342,7 +340,7 @@ def makecomment(request):
             c = Comment(post=p, author=user, content=comment)
             c.save()
         p.save()
-        user.levels += 3  #评论一次积分加 3
+        user.levels += 3  # 评论一次积分加 3
         user.save()
 
     return HttpResponse("评论成功")
@@ -353,12 +351,12 @@ class MessageCreate(CreateView):
     model = Message
     template_name = 'form.html'
     form_class = MessageForm
-    #fields = ('content',)
-    #SAE django1.5中fields失效，不知原因,故使用form_class
+    # fields = ('content',)
+    # SAE django1.5中fields失效，不知原因,故使用form_class
     success_url = reverse_lazy('show_notice')
 
     def form_valid(self, form):
-        #此处有待加强安全验证
+        # 此处有待加强安全验证
         sender = LoginUser.objects.get(username=self.request.user)
         receiver_id = int(self.kwargs.get('pk'))
         receiver = LoginUser.objects.get(id=receiver_id)
@@ -389,9 +387,9 @@ def columndetail(request, column_pk):
     column_posts = column_obj.post_set.all()
 
     return render(request, 'column_detail.html', {
-            'column_obj': column_obj,
-            'column_posts': column_posts
-        })
+        'column_obj': column_obj,
+        'column_posts': column_posts
+    })
 
 
 class SearchView(ListView):
@@ -405,23 +403,21 @@ class SearchView(ListView):
         return super(SearchView, self).get_context_data(**kwargs)
 
     def get_queryset(self):
-        #获取搜索的关键字
+        # 获取搜索的关键字
         q = self.request.GET.get('srchtxt', '')
-        #在帖子的标题和内容中搜索关键字
-        post_list = Post.objects.only(
-            'title',
-            'content').filter(Q(title__icontains=q) | Q(content__icontains=q))
+        # 在帖子的标题和内容中搜索关键字
+        post_list = Post.objects.only('title', 'content').filter(Q(title__icontains=q) | Q(content__icontains=q))
         return post_list
 
 
 def validate(request):
     """验证码"""
-    mstream = BytesIO()
+    m_stream = BytesIO()
     validate_code = create_validate_code()
     img = validate_code[0]
-    img.save(mstream, "GIF")
+    img.save(m_stream, "GIF")
     request.session['validate'] = validate_code[1]
-    return HttpResponse(mstream.getvalue(), "image/gif")
+    return HttpResponse(m_stream.getvalue(), "image/gif")
 
 
 def upload_image(request):
@@ -429,24 +425,38 @@ def upload_image(request):
     if request.method == 'POST':
         callback = request.GET.get('CKEditorFuncNum')
         content = request.FILES["upload"]
-        file_name = "upload_images/" + time.strftime(
-            "%Y%m%d%H%M%S", time.localtime()) + "_" + content.name
-        try:
-            from os import environ
-            online = environ.get("APP_NAME", "")
+        file_name = "static/upload_images/" + time.strftime("%Y%m%d%H%M%S", time.localtime()) + "_" + content.name
+        file_path = os.path.join(settings.BASE_DIR, file_name)
 
-            if online:
-                bucket = "mystorage"
-                import sae.storage
-                s = sae.storage.Client()
-                ob = sae.storage.Object(content.read())
-                url = s.put(bucket, file_name, ob)
+        f = open(file_path, 'wb')
+        for chunk in content.chunks():
+            f.write(chunk)
+        f.close()
+        url = '/{}'.format(file_name)
 
-            else:
-                url = None
+        # try:
+        #     body = content.read()
+        #     # 存储到object storage
+        #     file_path = os.path.join('static', 'upload', content.name)
+        #
+        #     url = ''
+        #     from os import environ
+        #     online = environ.get("APP_NAME", "")
+        #
+        #     if online:
+        #         bucket = "mystorage"
+        #         import sae.storage
+        #         s = sae.storage.Client()
+        #         ob = sae.storage.Object(content.read())
+        #         url = s.put(bucket, file_name, ob)
+        #
+        #     else:
+        #         url = None
+        #
+        # except Exception as e:
+        #     url = str(e)
 
-        except Exception as e:
-            url = str(e)
+        url = '/' + url
         res = r"<script>window.parent.CKEDITOR.tools.callFunction(" + callback + ",'" + url + "', '');</script>"
         return HttpResponse(res)
     else:

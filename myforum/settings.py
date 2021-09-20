@@ -1,4 +1,4 @@
-#coding:utf-8
+# coding:utf-8
 """
 Django settings for myforum project.
 
@@ -92,7 +92,6 @@ TEMPLATES = [
     },
 ]
 
-
 WSGI_APPLICATION = 'myforum.wsgi.application'
 
 # Database
@@ -113,11 +112,11 @@ USE_TZ = False
 
 AUTH_USER_MODEL = "forum.LoginUser"
 
-#会话(登录)超时设置
+# 会话(登录)超时设置
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_AGE = 60 * 10
 
-#cache配置#########################################
+# cache配置#########################################
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
@@ -138,14 +137,16 @@ CACHES = {
 
 # email配置#########################################
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.126.com'  #SMTP地址 例如: smtp.163.com
-EMAIL_PORT = 25  #SMTP端口 例如: 25
-EMAIL_HOST_USER = ''  #我自己的邮箱 例如: xxxxxx@126.com
-EMAIL_HOST_PASSWORD = ''  #我的邮箱密码 例如  xxxxxxxxx
+EMAIL_HOST = 'smtp.126.com'  # SMTP地址 例如: smtp.163.com
+EMAIL_PORT = 25  # SMTP端口 例如: 25
+EMAIL_HOST_USER = 'Psq147258@126.com'  # 我自己的邮箱 例如: xxxxxx@126.com
+EMAIL_HOST_PASSWORD = ''  # SMTP密码 例如  xxxxxxxxx
 # EMAIL_SUBJECT_PREFIX = u'v'       #为邮件Subject-line前缀,默认是'[django]'
-EMAIL_USE_TLS = True  #与SMTP服务器通信时，是否启动TLS链接(安全链接)。默认是false
+EMAIL_USE_TLS = True  # 与SMTP服务器通信时，是否启动TLS链接(安全链接)。默认是false
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
@@ -153,7 +154,7 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 STATIC_URL = '/static/'
 
 # Additional locations of static files
-STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"), )
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',

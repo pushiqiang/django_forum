@@ -1,11 +1,10 @@
 #!/usr/bin/env python
-#coding=utf-8
+# coding=utf-8
 """
 此模块还需优化
 """
 import random
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
-
 
 _letter_cases = "abcdefghjkmnpqrstuvwxy"  # 小写字母，去除可能干扰的i，l，o，z
 _upper_cases = _letter_cases.upper()  # 大写字母
@@ -61,7 +60,7 @@ def create_validate_code(
         for i in range(line_num):
             # 起始点
             begin = (random.randint(0, size[0]), random.randint(0, size[1]))
-            #结束点
+            # 结束点
             end = (random.randint(0, size[0]), random.randint(0, size[1]))
             draw.line([begin, end], fill=(0, 0, 0))
 
@@ -114,6 +113,6 @@ if __name__ == "__main__":
     mstream = StringIO.StringIO()
     code_img = create_validate_code()[0]
     code_img.save("validate.gif", "GIF")
-    #code_imgimg.save(mstream, "GIF")
-    #request.session['validate'] = validate_code[1]
-    #return HttpResponse(mstream.getvalue(), "image/gif")
+    # code_imgimg.save(mstream, "GIF")
+    # request.session['validate'] = validate_code[1]
+    # return HttpResponse(mstream.getvalue(), "image/gif")

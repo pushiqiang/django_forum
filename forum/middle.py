@@ -3,6 +3,7 @@ from django.core.cache import cache
 
 from django.utils.deprecation import MiddlewareMixin
 
+
 # 缓存
 # try:
 #    cache = cache['memcache']

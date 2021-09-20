@@ -9,7 +9,6 @@ import django.core.validators
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('auth', '0001_initial'),
         ('contenttypes', '0001_initial'),
@@ -114,7 +113,7 @@ class Migration(migrations.Migration):
                 'db_table': 'loginuser',
                 'verbose_name_plural': '\u7528\u6237',
             },
-            bases=(models.Model, ),
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Application',
@@ -141,7 +140,7 @@ class Migration(migrations.Migration):
                 'db_table': 'application',
                 'verbose_name_plural': '\u597d\u53cb\u7533\u8bf7',
             },
-            bases=(models.Model, ),
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Column',
@@ -173,7 +172,7 @@ class Migration(migrations.Migration):
                 'db_table': 'column',
                 'verbose_name_plural': '\u677f\u5757',
             },
-            bases=(models.Model, ),
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Comment',
@@ -200,7 +199,7 @@ class Migration(migrations.Migration):
                 'db_table': 'comment',
                 'verbose_name_plural': '\u8bc4\u8bba',
             },
-            bases=(models.Model, ),
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Message',
@@ -227,7 +226,7 @@ class Migration(migrations.Migration):
                 'db_table': 'message',
                 'verbose_name_plural': '\u6d88\u606f',
             },
-            bases=(models.Model, ),
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Nav',
@@ -259,7 +258,7 @@ class Migration(migrations.Migration):
                 'verbose_name': '\u5bfc\u822a\u6761',
                 'verbose_name_plural': '\u5bfc\u822a\u6761',
             },
-            bases=(models.Model, ),
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Notice',
@@ -291,7 +290,7 @@ class Migration(migrations.Migration):
                 'db_table': 'notice',
                 'verbose_name_plural': '\u901a\u77e5',
             },
-            bases=(models.Model, ),
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Post',
@@ -320,7 +319,7 @@ class Migration(migrations.Migration):
                 'db_table': 'post',
                 'verbose_name_plural': '\u4e3b\u9898',
             },
-            bases=(models.Model, ),
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='PostType',
@@ -340,7 +339,7 @@ class Migration(migrations.Migration):
                 'db_table': 'posttype',
                 'verbose_name_plural': '\u4e3b\u9898\u7c7b\u578b',
             },
-            bases=(models.Model, ),
+            bases=(models.Model,),
         ),
         migrations.AddField(
             model_name='post',
