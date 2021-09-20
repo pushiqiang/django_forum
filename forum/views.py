@@ -227,12 +227,10 @@ def makefriend(request, sender, receiver):
 def shownotice(request):
     notice_list = Notice.objects.filter(receiver=request.user, status=False)
     myfriends = LoginUser.objects.get(username=request.user).friends.all()
-    return render_to_response(
-        'notice_list.html', {
+    return render(request, 'notice_list.html', {
             'notice_list': notice_list,
             'myfriends': myfriends
-        },
-        context_instance=RequestContext(request))
+        })
 
 
 #具体通知
