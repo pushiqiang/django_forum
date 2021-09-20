@@ -131,11 +131,11 @@ class Migration(migrations.Migration):
                 ('receiver',
                  models.ForeignKey(
                      related_name='appli_receiver',
-                     to=settings.AUTH_USER_MODEL)),
+                     to=settings.AUTH_USER_MODEL, on_delete=models.PROTECT)),
                 ('sender',
                  models.ForeignKey(
                      related_name='appli_sender',
-                     to=settings.AUTH_USER_MODEL)),
+                     to=settings.AUTH_USER_MODEL, on_delete=models.PROTECT)),
             ],
             options={
                 'db_table': 'application',
@@ -160,13 +160,13 @@ class Migration(migrations.Migration):
                 ('manager',
                  models.ForeignKey(
                      related_name='column_manager',
-                     to=settings.AUTH_USER_MODEL)),
+                     to=settings.AUTH_USER_MODEL, on_delete=models.PROTECT)),
                 ('parent',
                  models.ForeignKey(
                      related_name='childcolumn',
                      blank=True,
                      to='forum.Column',
-                     null=True)),
+                     null=True, on_delete=models.PROTECT)),
             ],
             options={
                 'ordering': ['name'],
@@ -187,13 +187,13 @@ class Migration(migrations.Migration):
                 ('content', models.TextField()),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('author', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('author', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.PROTECT)),
                 ('comment_parent',
                  models.ForeignKey(
                      related_name='childcomment',
                      blank=True,
                      to='forum.Comment',
-                     null=True)),
+                     null=True, on_delete=models.PROTECT)),
             ],
             options={
                 'ordering': ['created_at'],
@@ -217,11 +217,11 @@ class Migration(migrations.Migration):
                 ('receiver',
                  models.ForeignKey(
                      related_name='message_receiver',
-                     to=settings.AUTH_USER_MODEL)),
+                     to=settings.AUTH_USER_MODEL, on_delete=models.PROTECT)),
                 ('sender',
                  models.ForeignKey(
                      related_name='message_sender',
-                     to=settings.AUTH_USER_MODEL)),
+                     to=settings.AUTH_USER_MODEL, on_delete=models.PROTECT)),
             ],
             options={
                 'db_table': 'message',
@@ -276,15 +276,15 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('content_type',
-                 models.ForeignKey(to='contenttypes.ContentType')),
+                 models.ForeignKey(to='contenttypes.ContentType', on_delete=models.PROTECT)),
                 ('receiver',
                  models.ForeignKey(
                      related_name='notice_receiver',
-                     to=settings.AUTH_USER_MODEL)),
+                     to=settings.AUTH_USER_MODEL, on_delete=models.PROTECT)),
                 ('sender',
                  models.ForeignKey(
                      related_name='notice_sender',
-                     to=settings.AUTH_USER_MODEL)),
+                     to=settings.AUTH_USER_MODEL, on_delete=models.PROTECT)),
             ],
             options={
                 'ordering': ['-created_at'],
@@ -310,10 +310,10 @@ class Migration(migrations.Migration):
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('author',
                  models.ForeignKey(
-                     related_name='post_author', to=settings.AUTH_USER_MODEL)),
-                ('column', models.ForeignKey(to='forum.Column')),
+                     related_name='post_author', to=settings.AUTH_USER_MODEL, on_delete=models.PROTECT)),
+                ('column', models.ForeignKey(to='forum.Column', on_delete=models.PROTECT)),
                 ('last_response',
-                 models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                 models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.PROTECT)),
             ],
             options={
                 'ordering': ['-created_at'],
@@ -345,13 +345,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='post',
             name='type_name',
-            field=models.ForeignKey(to='forum.PostType'),
+            field=models.ForeignKey(to='forum.PostType', on_delete=models.PROTECT),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='comment',
             name='post',
-            field=models.ForeignKey(to='forum.Post'),
+            field=models.ForeignKey(to='forum.Post', on_delete=models.PROTECT),
             preserve_default=True,
         ),
     ]

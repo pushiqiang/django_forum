@@ -1,16 +1,18 @@
-#coding:utf-8
+# coding:utf-8
 from django.core.cache import cache
 
-#缓存
-#try:
+from django.utils.deprecation import MiddlewareMixin
+
+# 缓存
+# try:
 #    cache = cache['memcache']
-#except ImportError as e:
+# except ImportError as e:
 #    cache = cache['default']
-#
-#中间件具体实现（中间件就是实现特定方法的类）
+
+# 中间件具体实现（中间件就是实现特定方法的类）
 
 
-class CommonMiddleware(object):
+class CommonMiddleware(MiddlewareMixin):
     def process_request(self, request):
         if 'HTTP_X_FORWARDED_FOR' in request.META:
             ip = request.META['HTTP_X_FORWARDED_FOR']
@@ -24,4 +26,4 @@ class CommonMiddleware(object):
         cache.set(ip, 0, 5 * 60)
         if ip not in online_ips:
             online_ips.append(ip)
-        cache.set("online_ips", online_ips)
+        # cache.set("online_ips", online_ips)

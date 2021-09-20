@@ -1,4 +1,4 @@
-#coding:utf-8
+# coding:utf-8
 from django import forms
 from forum.models import Message, Post, LoginUser
 

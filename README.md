@@ -19,13 +19,49 @@ github地址:[https://github.com/pushiqiang/django_forum.git](https://github.com
 qq:983003089
 
 
-更新：
+# 开发
+
+### 1. 安装依赖库
+```
+pip3 install -r requirements.txt
+```
+
+### 2. 数据初始化
+
+> Note: settings默认启用sqlite db，使用mysql请将DATABASES换成mysql配置
+> 数据初始化有两种方式，一是使用migrate，二是直接访问数据库执行sql，第二种方式以下1，2步骤不执行
+
+1.生成数据库migrations脚本：
+
+```
+python manage.py makemigrations
+```
+
+2.执行migrations脚本，生成数据库表（model -> db table）
+```
+python manage.py migrate
+```
+
+3. 生成admin账号
+```
+python manage.py createsuperuser
+```
+
+### 4.启动系统
+```
+python manage.py runserver 0.0.0.0:8888
+```
+
+
+# 更新：
 ---
 2016.2.12  更新发帖验证码功能<br>
 2016.2.23  添加删帖权限验证装饰器（@delete_permission 仿 @login_required），简单权限管理，普通用户不允许删帖，只有用户的privilege字段为1才允许删帖。<br>
 2016.4.11  添加ckeditor编辑器图片上传插入功能，因为sae代码空间没有IO权限，故将图片上传到sae的storage
 
-功能：
+2021.9.20  support Python 3.8.10 + Django==3.2.7
+
+# 功能：
 ---
 1.发帖，删帖，编辑功能，使用ckeditor富文本编辑器,实现本地图片上传插入。<br>
 2.多级评论，评论单级列表显示。<br>
@@ -47,7 +83,7 @@ qq:983003089
 <br>
 PS：在网上找了很久基于django的论坛系统，有很多blog系统，却很少发现forum系统，有个lbforum系统还是个论坛引擎框架，故一直想自己写个小微型的django论坛系统，于是趁着过年几天的空闲写了这么个系统，权当练手了，可能还有很多bug和待改善的地方，大神勿笑，有兴趣的朋友可以看看。<br>
 
-预览
+# 预览
 ---
 ![demo1](demo/f1.jpg)
 ![demo2](demo/f2.jpg)

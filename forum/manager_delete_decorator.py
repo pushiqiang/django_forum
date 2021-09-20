@@ -1,6 +1,5 @@
 #coding:utf8
 from functools import wraps
-from django.utils.decorators import available_attrs
 from django.http import HttpResponse
 
 
@@ -12,7 +11,7 @@ def user_passes_test(test_func):
     """
 
     def decorator(view_func):
-        @wraps(view_func, assigned=available_attrs(view_func))
+        @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
             if test_func(request.user) == '1':  #即user.privilege==1表示版主身份
                 return view_func(request, *args, **kwargs)
