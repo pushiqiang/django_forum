@@ -16,17 +16,24 @@ ENABLE_SSL = False
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-from sae.const import (MYSQL_HOST, MYSQL_HOST_S, MYSQL_PORT, MYSQL_USER,
-                       MYSQL_PASS, MYSQL_DB)
+# from sae.const import (MYSQL_HOST, MYSQL_HOST_S, MYSQL_PORT, MYSQL_USER,
+#                        MYSQL_PASS, MYSQL_DB)
+#
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': MYSQL_DB,
+#         'USER': MYSQL_USER,
+#         'PASSWORD': MYSQL_PASS,
+#         'HOST': MYSQL_HOST,
+#         'PORT': MYSQL_PORT,
+#     }
+# }
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': MYSQL_DB,
-        'USER': MYSQL_USER,
-        'PASSWORD': MYSQL_PASS,
-        'HOST': MYSQL_HOST,
-        'PORT': MYSQL_PORT,
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
@@ -55,19 +62,36 @@ INSTALLED_APPS = (
     'forum',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    #'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    ###############################自定义中间件################################
+    # ############################## 自定义中间件 ################################
     'forum.middle.CommonMiddleware',
 )
 
 ROOT_URLCONF = 'myforum.urls'
+
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, 'forum', 'templates'), ],
+        "APP_DIRS": True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
 
 WSGI_APPLICATION = 'myforum.wsgi.application'
 
@@ -112,13 +136,13 @@ CACHES = {
     #    },
 }
 
-#email配置#########################################
+# email配置#########################################
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.126.com'  #SMTP地址 例如: smtp.163.com
 EMAIL_PORT = 25  #SMTP端口 例如: 25
 EMAIL_HOST_USER = ''  #我自己的邮箱 例如: xxxxxx@126.com
 EMAIL_HOST_PASSWORD = ''  #我的邮箱密码 例如  xxxxxxxxx
-#EMAIL_SUBJECT_PREFIX = u'v'       #为邮件Subject-line前缀,默认是'[django]'
+# EMAIL_SUBJECT_PREFIX = u'v'       #为邮件Subject-line前缀,默认是'[django]'
 EMAIL_USE_TLS = True  #与SMTP服务器通信时，是否启动TLS链接(安全链接)。默认是false
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

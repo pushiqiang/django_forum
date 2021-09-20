@@ -6,10 +6,6 @@
 import random
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
-#try:
-#    import cStringIO as StringIO
-#except ImportError:
-#    import StringIO
 
 _letter_cases = "abcdefghjkmnpqrstuvwxy"  # 小写字母，去除可能干扰的i，l，o，z
 _upper_cases = _letter_cases.upper()  # 大写字母

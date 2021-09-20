@@ -1,19 +1,19 @@
-#coding:utf-8
-from django.shortcuts import render_to_response, get_object_or_404
+# coding:utf-8
+from django.shortcuts import render
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect
-from django.views.generic import View, TemplateView, ListView, DetailView
+from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from forum.models import Nav, Post, Comment, Application, LoginUser, Notice, Column, Message
 from forum.form import MessageForm, PostForm, LoginUserForm
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.sites.models import get_current_site
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
 from django.db.models import Q
 from django.utils.timezone import now, timedelta
-from datetime import datetime
 from django.core.cache import cache
 
 from forum.validate import create_validate_code
@@ -21,7 +21,7 @@ from forum.validate import create_validate_code
 try:
     import cStringIO as StringIO
 except ImportError:
-    import StringIO
+    from io import StringIO
 
 #try:
 #    cache = cache['memcache']
@@ -93,7 +93,7 @@ def userlogin(request, template_name='login.html'):
         next = request.GET.get('next', None)
         if next is None:
             next = reverse_lazy('index')
-        return render_to_response(template_name, {'next': next})
+        return render(request, template_name, {'next': next})
 
 
 #用户注销
@@ -140,13 +140,13 @@ def userregister(request):
                 #v.as_text() 详见django.forms.util.ErrorList 中
                 errors.append(v.as_text())
 
-        return render_to_response('user_ok.html', {"errors": errors})
+        return render(request, 'user_ok.html', {"errors": errors})
 
     else:
-        #next = request.GET.get('next',None)
-        #if next is None:
-        #next = reverse_lazy('index')
-        return render_to_response('register.html')
+        # next = request.GET.get('next',None)
+        # if next is None:
+        # next = reverse_lazy('index')
+        return render(request, 'register.html')
 
 
 class BaseMixin(object):
@@ -205,13 +205,11 @@ def postdetail(request, post_pk):
         post.save()
         visited_ips.append(ip)
     cache.set(title, visited_ips, 15 * 60)
-    return render_to_response(
-        'post_detail.html', {
+    return render(request, 'post_detail.html', {
             'post': post,
             'comment_list': comment_list,
             'message_number': k
-        },
-        context_instance=RequestContext(request))
+        })
 
 
 #加好友
@@ -386,9 +384,7 @@ class MessageDetail(DetailView):
 #所有板块
 def columnall(request):
     column_list = Column.objects.all()
-    return render_to_response(
-        'column_list.html', {'column_list': column_list},
-        context_instance=RequestContext(request))
+    return render(request, 'column_list.html', {'column_list': column_list})
 
 
 #每个板块
@@ -396,12 +392,10 @@ def columndetail(request, column_pk):
     column_obj = Column.objects.get(pk=column_pk)
     column_posts = column_obj.post_set.all()
 
-    return render_to_response(
-        'column_detail.html', {
+    return render(request, 'column_detail.html', {
             'column_obj': column_obj,
             'column_posts': column_posts
-        },
-        context_instance=RequestContext(request))
+        })
 
 
 #搜索
@@ -455,7 +449,7 @@ def upload_image(request):
             else:
                 url = None
 
-        except Exception, e:
+        except Exception as e:
             url = str(e)
         res = r"<script>window.parent.CKEDITOR.tools.callFunction(" + callback + ",'" + url + "', '');</script>"
         return HttpResponse(res)

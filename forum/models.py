@@ -3,7 +3,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db.models import signals
 import datetime
 
@@ -38,7 +38,7 @@ class Nav(models.Model):
     url = models.CharField(
         max_length=200, blank=True, null=True, verbose_name=u'指向地址')
     create_time = models.DateTimeField(
-        u'创建时间', default=datetime.datetime.now, auto_now_add=True)
+        u'创建时间', auto_now_add=True)
 
     class Meta:
         db_table = 'nav'
@@ -52,9 +52,9 @@ class Nav(models.Model):
 class Column(models.Model):  #板块
     name = models.CharField(max_length=30)
     manager = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='column_manager')  #版主
+        settings.AUTH_USER_MODEL, related_name='column_manager', on_delete=models.PROTECT)  #版主
     parent = models.ForeignKey(
-        'self', blank=True, null=True, related_name='childcolumn')
+        'self', blank=True, null=True, related_name='childcolumn', on_delete=models.PROTECT)
     description = models.TextField()
     img = models.CharField(
         max_length=200, default='/static/tx/default.jpg', verbose_name=u'图标')
@@ -70,7 +70,7 @@ class Column(models.Model):  #板块
     def __unicode__(self):
         return self.name
 
-    @models.permalink
+    # @models.permalink
     def get_absolute_url(self):
         return ('column_detail', (), {'column_pk': self.pk})
 
@@ -91,14 +91,14 @@ class PostType(models.Model):  #文章类型
 class Post(models.Model):  #文章
     title = models.CharField(max_length=30)
     author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='post_author')  #作者
-    column = models.ForeignKey(Column)  #所属板块
-    type_name = models.ForeignKey(PostType)  #文章类型
+        settings.AUTH_USER_MODEL, related_name='post_author', on_delete=models.PROTECT)  #作者
+    column = models.ForeignKey(Column, on_delete=models.PROTECT)  #所属板块
+    type_name = models.ForeignKey(PostType, on_delete=models.PROTECT)  #文章类型
     content = models.TextField()
 
     view_times = models.IntegerField(default=0)  #浏览次数
     responce_times = models.IntegerField(default=0)  #回复次数
-    last_response = models.ForeignKey(settings.AUTH_USER_MODEL)  #最后回复者
+    last_response = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)  #最后回复者
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -114,16 +114,16 @@ class Post(models.Model):  #文章
     def description(self):
         return u'%s 发表了主题《%s》' % (self.author, self.title)
 
-    @models.permalink
+    # @models.permalink
     def get_absolute_url(self):
         return ('post_detail', (), {'post_pk': self.pk})
 
 
 class Comment(models.Model):  #评论
-    post = models.ForeignKey(Post)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL)
+    post = models.ForeignKey(Post, on_delete=models.PROTECT)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     comment_parent = models.ForeignKey(
-        'self', blank=True, null=True, related_name='childcomment')
+        'self', blank=True, null=True, related_name='childcomment', on_delete=models.PROTECT)
     content = models.TextField()
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -141,16 +141,16 @@ class Comment(models.Model):  #评论
         return u'%s 回复了您的帖子(%s) R:《%s》' % (self.author, self.post,
                                            self.content)
 
-    @models.permalink
+    # @models.permalink
     def get_absolute_url(self):
         return ('post_detail', (), {'post_pk': self.post.pk})
 
 
 class Message(models.Model):  #好友消息
     sender = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='message_sender')  #发送者
+        settings.AUTH_USER_MODEL, related_name='message_sender', on_delete=models.PROTECT)  #发送者
     receiver = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='message_receiver')  #接收者
+        settings.AUTH_USER_MODEL, related_name='message_receiver', on_delete=models.PROTECT)  #接收者
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -165,9 +165,9 @@ class Message(models.Model):  #好友消息
 
 class Application(models.Model):  #好友申请
     sender = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='appli_sender')  #发送者
+        settings.AUTH_USER_MODEL, related_name='appli_sender', on_delete=models.PROTECT)  #发送者
     receiver = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='appli_receiver')  #接收者
+        settings.AUTH_USER_MODEL, related_name='appli_receiver', on_delete=models.PROTECT)  #接收者
     status = models.IntegerField(default=0)  #申请状态 0:未查看 1:同意 2:不同意
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -182,12 +182,12 @@ class Application(models.Model):  #好友申请
 
 class Notice(models.Model):
     sender = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='notice_sender')  #发送者
+        settings.AUTH_USER_MODEL, related_name='notice_sender', on_delete=models.PROTECT)  #发送者
     receiver = models.ForeignKey(
-        settings.AUTH_USER_MODEL, related_name='notice_receiver')  #接收者
-    content_type = models.ForeignKey(ContentType)
+        settings.AUTH_USER_MODEL, related_name='notice_receiver', on_delete=models.PROTECT)  #接收者
+    content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT)
     object_id = models.PositiveIntegerField()
-    event = generic.GenericForeignKey('content_type', 'object_id')
+    event = GenericForeignKey('content_type', 'object_id')
 
     status = models.BooleanField(default=False)  #是否阅读
     type = models.IntegerField()  #通知类型 0:评论 1:好友消息 2:好友申请
@@ -270,7 +270,7 @@ def message_save(sender, instance, signal, *args, **kwargs):
         event.save()
 
 
-#消息响应函数注册
+# 消息响应函数注册
 signals.post_save.connect(comment_save, sender=Comment)
 signals.post_save.connect(application_save, sender=Message)
 signals.post_save.connect(message_save, sender=Application)
