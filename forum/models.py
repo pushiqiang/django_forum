@@ -1,11 +1,13 @@
 #coding:utf-8
+import datetime
+
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db.models import signals
-import datetime
+from django.urls import reverse_lazy
 
 # Create your models here.
 
@@ -70,9 +72,8 @@ class Column(models.Model):  #板块
     def __unicode__(self):
         return self.name
 
-    # @models.permalink
     def get_absolute_url(self):
-        return ('column_detail', (), {'column_pk': self.pk})
+        return reverse_lazy('column_detail', kwargs={"column_pk": self.pk})
 
 
 class PostType(models.Model):  #文章类型
@@ -114,9 +115,8 @@ class Post(models.Model):  #文章
     def description(self):
         return u'%s 发表了主题《%s》' % (self.author, self.title)
 
-    # @models.permalink
     def get_absolute_url(self):
-        return ('post_detail', (), {'post_pk': self.pk})
+        return reverse_lazy('post_detail', kwargs={"post_pk": self.pk})
 
 
 class Comment(models.Model):  #评论
@@ -141,9 +141,8 @@ class Comment(models.Model):  #评论
         return u'%s 回复了您的帖子(%s) R:《%s》' % (self.author, self.post,
                                            self.content)
 
-    # @models.permalink
     def get_absolute_url(self):
-        return ('post_detail', (), {'post_pk': self.post.pk})
+        return reverse_lazy('post_detail', kwargs={"post_pk": self.post.pk})
 
 
 class Message(models.Model):  #好友消息

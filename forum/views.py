@@ -1,7 +1,7 @@
 # coding:utf-8
 from django.shortcuts import render
-from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect
+from django.http.response import Http404
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from forum.models import Nav, Post, Comment, Application, LoginUser, Notice, Column, Message
@@ -18,14 +18,11 @@ from django.core.cache import cache
 
 from forum.validate import create_validate_code
 
-try:
-    import cStringIO as StringIO
-except ImportError:
-    from io import StringIO
+from io import BytesIO
 
-#try:
+# try:
 #    cache = cache['memcache']
-#except ImportError as e:
+# except ImportError as e:
 #    cache = cache['default']
 
 import logging
@@ -35,8 +32,8 @@ logger = logging.getLogger(__name__)
 PAGE_NUM = 50
 
 
-#统计当前在线人数（5分钟内，中间件实现于middle.py）
 def get_online_ips_count():
+    """统计当前在线人数（5分钟内，中间件实现于middle.py）"""
     online_ips = cache.get("online_ips", [])
     if online_ips:
         online_ips = cache.get_many(online_ips).keys()
@@ -44,8 +41,8 @@ def get_online_ips_count():
     return 0
 
 
-#得到论坛信息，贴子数，用户数，昨日发帖数，今日发帖数
 def get_forum_info():
+    """获取 论坛信息，贴子数，用户数，昨日发帖数，今日发帖数"""
     #请使用缓存
     oneday = timedelta(days=1)
     today = now().date()
@@ -76,8 +73,8 @@ def get_forum_info():
     return info
 
 
-#用户登录
 def userlogin(request, template_name='login.html'):
+    """用户登录"""
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
@@ -96,14 +93,14 @@ def userlogin(request, template_name='login.html'):
         return render(request, template_name, {'next': next})
 
 
-#用户注销
 def userlogout(request):
+    """用户注销"""
     logout(request)
     return HttpResponseRedirect(reverse_lazy('index'))
 
 
-#用户注销
 def userregister(request):
+    """用户注销"""
     if request.method == 'POST':
         username = request.POST.get("username", "")
         password = request.POST.get("password", "")
@@ -157,19 +154,19 @@ class BaseMixin(object):
             context['column_list'] = Column.objects.all()[0:5]
             context['last_comments'] = Comment.objects.all().order_by(
                 "-created_at")[0:10]
-            if self.request.user.is_authenticated():
+            if self.request.user.is_authenticated:
                 k = Notice.objects.filter(
                     receiver=self.request.user, status=False).count()
                 context['message_number'] = k
 
         except Exception as e:
-            logger.error(u'[BaseMixin]加载基本信息出错')
+            logger.error(u'[BaseMixin]加载基本信息出错', e)
 
         return context
 
 
-#首页
 class IndexView(BaseMixin, ListView):
+    """首页"""
     model = Post
     queryset = Post.objects.all()
     template_name = 'index.html'
@@ -183,12 +180,12 @@ class IndexView(BaseMixin, ListView):
         return super(IndexView, self).get_context_data(**kwargs)
 
 
-#帖子详细页面
 def postdetail(request, post_pk):
+    """帖子详细页面"""
     post_pk = int(post_pk)
     post = Post.objects.get(pk=post_pk)
     comment_list = post.comment_set.all()
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         k = Notice.objects.filter(receiver=request.user, status=False).count()
     else:
         k = 0
@@ -212,8 +209,8 @@ def postdetail(request, post_pk):
         })
 
 
-#加好友
 def makefriend(request, sender, receiver):
+    """加好友"""
     sender = LoginUser.objects.get(username=sender)
     receiver = LoginUser.objects.get(username=receiver)
     application = Application(sender=sender, receiver=receiver, status=0)
@@ -222,9 +219,9 @@ def makefriend(request, sender, receiver):
         "OK申请发送成功！%s-->%s;<a href='/'>返回</a>" % (sender, receiver))
 
 
-#消息通知
 @login_required(login_url=reverse_lazy('user_login'))
 def shownotice(request):
+    """消息通知"""
     notice_list = Notice.objects.filter(receiver=request.user, status=False)
     myfriends = LoginUser.objects.get(username=request.user).friends.all()
     return render(request, 'notice_list.html', {
@@ -233,8 +230,8 @@ def shownotice(request):
         })
 
 
-#具体通知
 def noticedetail(request, pk):
+    """具体通知"""
     pk = int(pk)
     notice = Notice.objects.get(pk=pk)
     notice.status = True
@@ -248,8 +245,8 @@ def noticedetail(request, pk):
         reverse_lazy('message_detail', kwargs={"pk": message_id}))
 
 
-#好友同意/拒绝（flag 1同意，2拒绝）
 def friendagree(request, pk, flag):
+    """好友同意/拒绝（flag 1同意，2拒绝）"""
     flag = int(flag)
     pk = int(pk)
     entity = Notice.objects.get(pk=pk)
@@ -268,8 +265,8 @@ def friendagree(request, pk, flag):
     return HttpResponse(str)
 
 
-#用户已发贴
 class UserPostView(ListView):
+    """用户已发贴"""
     template_name = 'user_posts.html'
     context_object_name = 'user_posts'
     paginate_by = PAGE_NUM
@@ -279,8 +276,8 @@ class UserPostView(ListView):
         return user_posts
 
 
-#发帖
 class PostCreate(CreateView):
+    """发帖"""
     model = Post
     template_name = 'form.html'
     form_class = PostForm
@@ -308,23 +305,24 @@ class PostCreate(CreateView):
         return HttpResponse("发贴成功！<a href='/'>返回</a>")
 
 
-#编辑贴
 class PostUpdate(UpdateView):
+    """编辑贴"""
+    form_class = PostForm
     model = Post
     template_name = 'form.html'
     success_url = reverse_lazy('user_post')
 
 
-#删贴
 class PostDelete(DeleteView):
+    """删贴"""
     model = Post
     template_name = 'delete_confirm.html'
     success_url = reverse_lazy('user_post')
 
 
-#评论
 @login_required(login_url=reverse_lazy('user_login'))
 def makecomment(request):
+    """评论"""
     if request.method == 'POST':
         comment = request.POST.get("comment", "")
         post_id = request.POST.get("post_id", "")
@@ -350,8 +348,8 @@ def makecomment(request):
     return HttpResponse("评论成功")
 
 
-#发送消息
 class MessageCreate(CreateView):
+    """发送消息"""
     model = Message
     template_name = 'form.html'
     form_class = MessageForm
@@ -372,21 +370,21 @@ class MessageCreate(CreateView):
         return HttpResponse("消息发送成功！")
 
 
-#具体消息
 class MessageDetail(DetailView):
+    """具体消息"""
     model = Message
     template_name = 'message.html'
     context_object_name = 'message'
 
 
-#所有板块
 def columnall(request):
+    """所有板块"""
     column_list = Column.objects.all()
     return render(request, 'column_list.html', {'column_list': column_list})
 
 
-#每个板块
 def columndetail(request, column_pk):
+    """每个板块"""
     column_obj = Column.objects.get(pk=column_pk)
     column_posts = column_obj.post_set.all()
 
@@ -396,8 +394,8 @@ def columndetail(request, column_pk):
         })
 
 
-#搜索
 class SearchView(ListView):
+    """搜索"""
     template_name = 'search_result.html'
     context_object_name = 'post_list'
     paginate_by = PAGE_NUM
@@ -416,9 +414,9 @@ class SearchView(ListView):
         return post_list
 
 
-#验证码
 def validate(request):
-    mstream = StringIO.StringIO()
+    """验证码"""
+    mstream = BytesIO()
     validate_code = create_validate_code()
     img = validate_code[0]
     img.save(mstream, "GIF")
@@ -426,8 +424,8 @@ def validate(request):
     return HttpResponse(mstream.getvalue(), "image/gif")
 
 
-#编辑器图片上传
 def upload_image(request):
+    """编辑器图片上传"""
     if request.method == 'POST':
         callback = request.GET.get('CKEditorFuncNum')
         content = request.FILES["upload"]

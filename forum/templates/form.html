@@ -4,6 +4,6 @@
 	{{ form.as_p }}
 	<script type="text/javascript">CKEDITOR.replace('content');</script>
 	验证码：<input id="validate" name="validate" type="text"></input>
-	<img onclick="this.setAttribute('src','/validate')" src="{% url 'validate' %}" title="点击重新获取" /><br>
+	<img onclick="this.setAttribute('src','/validate/')" src="{% url 'validate' %}" title="点击重新获取" /><br>
 	<input type="submit" value="更新/添加">
 </form>

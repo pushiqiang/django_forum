@@ -21,9 +21,9 @@ class CommonMiddleware(MiddlewareMixin):
 
         online_ips = cache.get("online_ips", [])
         if online_ips:
-            online_ips = cache.get_many(online_ips).keys()
+            online_ips = list(cache.get_many(online_ips).keys())
 
         cache.set(ip, 0, 5 * 60)
         if ip not in online_ips:
             online_ips.append(ip)
-        # cache.set("online_ips", online_ips)
+        cache.set("online_ips", online_ips)
