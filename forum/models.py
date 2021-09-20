@@ -26,7 +26,7 @@ class LoginUser(AbstractUser):
         verbose_name_plural = u'用户'
         ordering = ['-date_joined']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.get_username()
 
     def checkfriend(self, username):
@@ -48,7 +48,7 @@ class Nav(models.Model):
         verbose_name_plural = verbose_name = u"导航条"
         ordering = ['-create_time']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -70,7 +70,7 @@ class Column(models.Model):  # 板块
         ordering = ['-post_number']
         verbose_name_plural = u'板块'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):
@@ -86,7 +86,7 @@ class PostType(models.Model):  # 文章类型
         db_table = 'posttype'
         verbose_name_plural = u'主题类型'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.type_name
 
 
@@ -110,7 +110,7 @@ class Post(models.Model):  # 文章
         ordering = ['-created_at']
         verbose_name_plural = u'主题'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def description(self):
@@ -135,7 +135,7 @@ class Comment(models.Model):  # 评论
         ordering = ['created_at']
         verbose_name_plural = u'评论'
 
-    def __unicode__(self):
+    def __str__(self):
         return self.content
 
     def description(self):
@@ -199,7 +199,7 @@ class Notice(models.Model):
         ordering = ['-created_at']
         verbose_name_plural = u'通知'
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s的事件: %s" % (self.sender, self.description())
 
     def description(self):
